@@ -1,0 +1,11 @@
+{
+    "ChromosomeFile": "chr3L.bed",
+    "ChromosomeFolder": "/mnt/PALM_dataserv/DATA/Commun/genomes/dm6/OligoMiner/dm6_balanced/",
+    "resolution": 10000,
+    "startLib": 8883000,
+    "nbrLociTotal": 20,
+    "nbrProbeByLocus": 100,
+    "nbrBcd_RT_ByProbe": 3,
+    "PrimerU": "primer1",
+    "bcd_RT_File": "List_RT.csv"
+}

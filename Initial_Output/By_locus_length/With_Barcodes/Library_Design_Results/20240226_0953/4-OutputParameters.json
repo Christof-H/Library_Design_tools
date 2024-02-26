@@ -1,0 +1,14 @@
+{
+    "Script_Name": "Classical_Library_Design.py",
+    "ChromosomeFile": "chr3L.bed",
+    "ChromosomeFolder": "/mnt/PALM_dataserv/DATA/Commun/genomes/dm6/OligoMiner/dm6_balanced/",
+    "resolution": 10000,
+    "startLib": 8883000,
+    "endLib": 9383000,
+    "nbrLociTotal": 50,
+    "nbrProbeByLocus": 100,
+    "nbrBcd_RT_ByProbe": 3,
+    "PrimerU": "primer1",
+    "bcd_TR_File": "Barcodes.csv",
+    "primerUnivFile": "Primer_univ.csv"
+}
