@@ -7,5 +7,6 @@
     "nbrProbeByLocus": 10,
     "nbrBcd_RT_ByProbe": 3,
     "PrimerU": "primer1",
-    "bcd_RT_File": "List_RT.csv"
+    "bcd_RT_File": "List_RT.csv",
+    "max_diff_pourcent": 10
 }
