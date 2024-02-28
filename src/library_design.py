@@ -61,7 +61,7 @@ nbrProbeByLocus = input_parameters["nbrProbeByLocus"]
 nbrBcd_RT_ByProbe = input_parameters["nbrBcd_RT_ByProbe"]
 PrimerU = input_parameters["PrimerU"]
 bcd_RT_File = input_parameters["bcd_RT_File"]
-max_diff_pourcent = input_parameters["max_diff_pourcent"]
+max_diff_percent = input_parameters["max_diff_percent"]
 endLib = startLib + (nbrLociTotal * resolution)
 
 
@@ -259,6 +259,7 @@ parameters["nbrBcd_RT_ByProbe"] = nbrBcd_RT_ByProbe
 parameters["PrimerU"] = PrimerU
 parameters["bcd_TR_File"] = bcd_RT_File
 parameters["primer_Univ_File"] = PRIMER_UNIV_FILE
+parameters["max_diff_percent"] = max_diff_percent
 
 
 # Write the 4-OutputParameters.json file
