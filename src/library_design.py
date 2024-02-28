@@ -199,7 +199,7 @@ print(f"difference in size : {diff_pourcentage:.1f}%")
 # If there is a significant difference in size between the primary probes of all the Locus,
 #completion primary probes too small to standardise the length of the oligo-pool
 # ATTENTION: 3' completion of the sequence
-library.completion(diff_pourcentage, max_length, max_diff_pourcent)
+library.completion(diff_pourcentage, max_length, max_diff_percent)
 
 
 # ---------------------------------------------------------------------------------------------
