@@ -1,4 +1,4 @@
-def universal_Primer_format(path : str) -> dict[str, str]:
+def universal_primer_format(path : str) -> dict[str, str]:
     """Function for opening, formatting and storing universal primer sequences.
 
     Args:
@@ -8,15 +8,15 @@ def universal_Primer_format(path : str) -> dict[str, str]:
         dict[str, list(str)]: [description]
     """
 
-    primerUniv={}
+    primer_univ={}
     with open(path, mode="r", encoding="utf-8") as file:
         for line in file:
             data = line.replace('\n','').split(',')
-            primerUniv[data[0]] = [item for item in data[1:]]
-    return primerUniv
+            primer_univ[data[0]] = [item for item in data[1:]]
+    return primer_univ
 
 
-def bcd_RT_format(path : str) -> list[str]:
+def bcd_rt_format(path : str) -> list[str]:
     """Function for opening, formatting and storing barcode or RT sequences.
 
     Args:
@@ -26,12 +26,12 @@ def bcd_RT_format(path : str) -> list[str]:
         list[list[str]]: [[name, sequence], ...]
     """
 
-    bcd_RT_list = []
+    bcd_rt_list = []
     with open(path, mode='r', encoding='utf-8') as file:
         for line in file:
             data = line.replace('\n', '').split(',')
-            bcd_RT_list.append(data)
-        return bcd_RT_list
+            bcd_rt_list.append(data)
+        return bcd_rt_list
 
 
 def seq_genomic_format(path : str) -> list[str]:
