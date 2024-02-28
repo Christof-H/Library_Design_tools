@@ -6,26 +6,49 @@ Created on Fri Apr 16 16:07:15 2021
 @author: Christophe Houbron
 
 This script is used to design the primary probes corresponding to the genomic regions to be studied.
-Each primary probe contains a number (2 to 5) of a readout sequence specific to each region, a sequence (30-35 bases) complementary to the genomic DNA, and sequences on either side of the oligo to allow amplification of the library.  
+Each primary probe contains a number (2 to 5) of a readout sequence specific to each locus, 
+a sequence (30-35 bases) complementary to the genomic DNA, and sequences on either side of 
+the oligo to allow amplification of the library.  
 
-Using the parameters, the script will i) calculate the coordinates for each locus, ii) select primary probe sequences for each locus, iii) concatenate primary sequences with readout sequence and universal primers, iiii) check the homogeneity of the size of the differents probes. 
-Several output text files are created after running the Library_Design.py script. Library_Summary.csv file containing a table summarising all the information on each locus (locus number, start position, end position, readout probe, primer forward, primer reverse, number of probes per locus). A Json file (outputParameters.json) containing all the parameters used to generate the library, in order to have a backup if needed later. And a file called Full_sequence_Only.txt containing all the raw primary probe sequences of oligos used to order the microarray from an oligopool synthesizer company.
-It is possible to embed multiple libraries within one oligopool by using different sets of universal primers.
+Using the parameters, the script will :
+     i) calculate the coordinates for each locus 
+     ii) select primary probe sequences for each locus 
+     iii) concatenate primary sequences with readout sequence and universal primers
+     iiii) check the homogeneity of the size of the differents probes. 
+Several output text files are created after running the Library_Design.py script. 
+Library_Summary.csv file containing a table summarising all the information on each 
+locus (locus number, start position, end position, readout probe, primer forward, primer reverse, 
+number of probes per locus). 
+A Json file (outputParameters.json) containing all the parameters used to generate the library, 
+in order to have a backup if needed later. 
+And a file called Full_sequence_Only.txt containing all the raw primary probe sequences of oligos 
+used to order the microarray from an oligopool synthesizer company.
+It is possible to embed multiple libraries within one oligopool by using different sets of 
+universal primers.
 
 """
-import os, json, sys
+import os
+import random
+import copy
+import json
+
+
+import datetime as dt
 import modules.data_import_fonction as data
+from models.Library import *
+from models.Locus import *
 
-
-#-------------------Importing library parameters------------------------
-lib_design_by_length = True
-
+# ---------------------------------------------------------------------------------------------
+#                               Importing library parameters
+# ---------------------------------------------------------------------------------------------
 rootFolder = os.getcwd()
 
 
-jsonFile = 'input_parameters.json'
-jsonPath = rootFolder + os.sep + 'src' + os.sep + jsonFile
-with open(jsonPath, mode='r', encoding='UTF-8') as file:
+JSON_FILE = "input_parameters.json"
+PRIMER_UNIV_FILE = "Primer_univ.csv"
+
+jsonPath = rootFolder + os.sep + "src" + os.sep + JSON_FILE
+with open(jsonPath, mode="r", encoding="UTF-8") as file:
     input_parameters = json.load(file)
 
 
@@ -38,30 +61,30 @@ nbrProbeByLocus = input_parameters["nbrProbeByLocus"]
 nbrBcd_RT_ByProbe = input_parameters["nbrBcd_RT_ByProbe"]
 PrimerU = input_parameters["PrimerU"]
 bcd_RT_File = input_parameters["bcd_RT_File"]
+max_diff_pourcent = input_parameters["max_diff_pourcent"]
+endLib = startLib + (nbrLociTotal * resolution)
 
-if lib_design_by_length :
-    endLib = startLib + (nbrLociTotal * resolution)
 
 
-primer_Univ_File = 'Primer_univ.csv'
 
-resources_path = rootFolder + os.sep + 'resources'
+resources_path = rootFolder + os.sep + "resources"
 bcd_RT_Path = resources_path + os.sep + bcd_RT_File
 genomic_Path = chromosomeFolder + os.sep + chromosomeFile
-primer_Univ_Path = rootFolder + os.sep + primer_Univ_File
+primer_Univ_Path = rootFolder + os.sep + PRIMER_UNIV_FILE
 
-
-
-#-------------------Creating result folder----------------------
-resultFolder = rootFolder + os.sep + 'Library_Design_Results'
-if not os.path.exists(resultFolder):    
+# ---------------------------------------------------------------------------------------------
+#                                   Creating result folder
+# ---------------------------------------------------------------------------------------------
+resultFolder = rootFolder + os.sep + "Library_Design_Results"
+if not os.path.exists(resultFolder):
     os.mkdir(resultFolder)
 
+# ---------------------------------------------------------------------------------------------
+#                           Formatting and storage of sequences
+#               (primers, TRs, barcodes, genomics) in corresponding variables
+# ---------------------------------------------------------------------------------------------
 
-
-#-----------------Formatting and storage of sequences (primers, TRs, barcodes, genomics) in corresponding variables-------------------
-
-# Opening and formatting barcodes or RTs in the bcd_RT variable: 
+# Opening and formatting barcodes or RTs in the bcd_RT variable:
 bcd_RT = data.bcd_RT_format(bcd_RT_Path)
 
 # Opening and formatting the coordinates and genomic sequences of in the listSeqGenomic variable :
@@ -71,176 +94,172 @@ listSeqGenomic = data.seq_genomic_format(genomic_Path)
 primerUniv = data.universal_Primer_format(primer_Univ_Path)
 
 
-print('-'*70)
-print('listSeqGenomic =', listSeqGenomic[0])
-print('-'*70)
-print('bcd_RT =', bcd_RT[:2])
-print('-'*70)
-print('primerUniv = ', 'primer1 =', primerUniv['primer1'])
-print('-'*70)
+print("-" * 70)
+print("listSeqGenomic =", listSeqGenomic[0])
+print("-" * 70)
+print("bcd_RT =", bcd_RT[:2])
+print("-" * 70)
+print("primerUniv = ", "primer1 =", primerUniv["primer1"])
+print("-" * 70)
 
-#----REMPLISSAGE DES LOCUS (Primers Univ, start, end, Seq DNA genomic)-------
-from modules.functions import LocusDataClass
-import random
+# ---------------------------------------------------------------------------------------------
+#                               Filling locus information 
+#           (Primers Univ, start coordinates, end coordinates, DNA genomic sequences)
+# ---------------------------------------------------------------------------------------------
 
-
-# recherche des primers universels souhaités
+# Search for the desired universal primers
 primer = [primerUniv[x] for x in primerUniv.keys() if x == PrimerU]
 primer = primer[0]
 
-# Calcul des start et end position de chaque locus :
-startPositions = [startLib + x*resolution for x in range(nbrLociTotal)]
-endPositions = [startLib + (x+1)*resolution for x in range(nbrLociTotal)]
+# Calculation of start and end coordinates for each locus
+startPositions = [startLib + x * resolution for x in range(nbrLociTotal)]
+endPositions = [startLib + (x + 1) * resolution for x in range(nbrLociTotal)]
 
-# Remplissage de la classe LocusDataClass avec tous les Loci nécécesaires
-total_locus = list()
-for i, start, end in zip(range(nbrLociTotal),startPositions,endPositions):
-  total_locus.append(LocusDataClass(locusN=i+1, chrName=chromosomeFile.split('.')[0], startSeq=start, endSeq=end, primers_Univ = primer))
+# Filling the Library class with all the Locus
+library = Library()
+for i, start, end in zip(range(nbrLociTotal), startPositions, endPositions):
+    library.add_locus(
+        Locus(
+            locus_n=i + 1,
+            chr_name=chromosomeFile.split(".")[0],
+            start_seq=start,
+            end_seq=end,
+            primers_univ=primer,
+        )
+    )
 
 
-# Attribution des sequences d'ADN complémentaires sondes primaires par locus en fonction des coordonnées génomiques
-for locus in total_locus :
+# Allocation of the genomic DNA sequences of the primary probes for each locus of the Library according to the coordinates (start, end)
+for locus in library.total_loci:
     temp = []
-    for seq in listSeqGenomic :
-            if locus.startSeq <= int(seq[0]) and int(seq[1])< locus.endSeq:
-                temp.append([seq[0],seq[2]])                    
-            else :
-                pass
-    
+    for seq in listSeqGenomic:
+        if locus.start_seq <= int(seq[0]) and int(seq[1]) < locus.end_seq:
+            temp.append([seq[0], seq[2]])
+        else:
+            pass
+
     if len(temp) > nbrProbeByLocus:
         random.shuffle(temp)
         temp = temp[:nbrProbeByLocus]
         temp.sort()
-    locus.seqProbe = [x[1] for x in temp]
+    locus.seq_probe = [x[1] for x in temp]
 
-# Affichage pour exemple d'un locus :
-locus = total_locus[0].__dict__
-[print(x,':',locus[x]) for x in locus.keys()]
+# Display of a locus as an example
+print('-'*70)
+print ("Locus exemple :")
+print(library.total_loci[0])
 
-#%%COMPLETION DES SEQUENCES PRIMAIRES AVEC BARCODES ou RT, ET PRIMERS UNIVERSELS
 
-import copy
-# Insertion des binding sites pour les barcodes des loci selon le schéma suivant :
-# Bcdx_SeqADNgenomic_Bcdx_ ou Bcdx_SeqADNgenomic_Bcdx_Bcdx
+# Sequences for barcodes/RTs added to primary probes according to locus
 count = 0
-for locus in total_locus :
-    locus.bcdLocus = bcd_RT[count][0]
+for locus in library.total_loci:
     seqWithBcd = []
-    if nbrBcd_RT_ByProbe == 2 :
-        for item in locus.seqProbe :
-            seqWithBcd.append(bcd_RT[count][1]+' '+ item +' '+bcd_RT[count][1])
-        count +=1
-        locus.seqProbe = seqWithBcd
-    elif nbrBcd_RT_ByProbe == 3 :
-        for item in locus.seqProbe :
-            seqWithBcd.append(bcd_RT[count][1]+' '+ item +' '+bcd_RT[count][1]*2)
-        count +=1
-        locus.seqProbe = seqWithBcd
-    elif nbrBcd_RT_ByProbe == 4 :
-        for item in locus.seqProbe :
-            seqWithBcd.append(bcd_RT[count][1]*2+' '+ item +' '+bcd_RT[count][1]*2)
-        count +=1
-        locus.seqProbe = seqWithBcd
-    elif nbrBcd_RT_ByProbe == 5 :
-        for item in locus.seqProbe :
-            seqWithBcd.append(bcd_RT[count][1]*3+' '+ item +' '+bcd_RT[count][1]*2)
-        count +=1
-        locus.seqProbe = seqWithBcd
-    
+    bcd_RT_seq = bcd_RT[count][1]
 
-# Insertion des primers universels selon le schéma suivant:
-# pu.fw_(Bcd-region_Bcdx_Bcdy_SeqADNgenomic_Bcdx_Bcdy)_pu.rev
+    for genomic_seq in locus.seq_probe:
+        if nbrBcd_RT_ByProbe == 2:
+            seqWithBcd.append(f"{bcd_RT_seq} {genomic_seq} {bcd_RT_seq}")
+        elif nbrBcd_RT_ByProbe == 3:
+            seqWithBcd.append(f"{bcd_RT_seq} {genomic_seq} {bcd_RT_seq * 2}")
+        elif nbrBcd_RT_ByProbe == 4:
+            seqWithBcd.append(f"{bcd_RT_seq * 2} {genomic_seq} {bcd_RT_seq * 2}")
+        elif nbrBcd_RT_ByProbe == 5:
+            seqWithBcd.append(f"{bcd_RT_seq * 3} {genomic_seq} {bcd_RT_seq * 2}")
+    count += 1
+    locus.seq_probe = seqWithBcd
 
-for locus in total_locus :
-    pFw=copy.deepcopy(locus.primers_Univ[1])
-    pRev=copy.deepcopy(locus.primers_Univ[3])
+
+# Sequences for universal primers added to the primary probes at each end
+
+for locus in library.total_loci:
+    pFw = copy.deepcopy(locus.primers_univ[1])
+    pRev = copy.deepcopy(locus.primers_univ[3])
     temp = list()
-    temp=[pFw+' '+ x +' '+pRev for x in locus.seqProbe]
-    locus.seqProbe = temp
+    temp = [f"{pFw} {x} {pRev}" for x in locus.seq_probe]
+    # temp=[pFw+' '+ x +' '+pRev for x in locus.seqProbe]
+    locus.seq_probe = temp
 
-# Affichage pour exemple d'une séquence de sonde primaire :    
-print('-'*70)
-print("exemple d'une séquence primaire :")
-print('-'*70)
-print(total_locus[0].seqProbe[0])
+# Display example of a final primary probe sequence
+print("-" * 70)
+print("example of a primary probe sequence :")
+print("-" * 70)
+print(library.total_loci[0].seq_probe[0])
+
+# ---------------------------------------------------------------------------------------------
+#                               Checking and completion
+# ---------------------------------------------------------------------------------------------
+
+# Checking primary probes length for all Locus
+min_length, max_length, diff_nbr, diff_pourcentage = library.check_length_seq_diff()
+
+# If there is a significant difference in size between the primary probes of all the Locus,
+#completion primary probes too small to standardise the length of the oligo-pool
+# ATTENTION: 3' completion of the sequence
+library.completion(diff_pourcentage, max_length, max_diff_pourcent)
 
 
-#%%------------VERIFICATION TAILLE DES SONDES PRIMAIRES-------------------
-#--------------ET COMPLETION SI TAILLE TROP DIFFERENTE--------------------
-from modules.functions import Check_Length_Seq_Diff
-from modules.functions import Completion
+# ---------------------------------------------------------------------------------------------
+#                           Writing the various results files
+# ---------------------------------------------------------------------------------------------
 
-# Cacul de la différence de taille entre les séquences des sondes primaires
-diff_pourcent, max_seq_length = Check_Length_Seq_Diff(total_locus)
-
-# Completion des séquences avec nucléotides aléatoires
-# ATTENTION: complétion en 3' de la séquence !!!!!
-Completion(diff_pourcent,max_seq_length,total_locus)
-print('-'*70)
-print("exemple de séquences primaires :")
-print(total_locus[0].seqProbe[:3])
-
-#%%----------ECRITURE DES DIFFERENTS FICHIERS RESULTATS---------------------            
-#Cr&ation du dossier daté pour différentier les différents librairies dessinées
-import datetime as dt
+# Creation of a dated file to differentiate between the different libraries designed
 date_now = dt.datetime.now().strftime("%Y%m%d_%H%M")
-
-
 pathResultFolder = resultFolder + os.sep + date_now
 os.mkdir(pathResultFolder)
 
 
-#fichier détaillé avec information et séquences : Library_details
-resultDetails = pathResultFolder+os.sep+'1_Library_details.txt'
-with open (resultDetails, 'w') as file :
-    for locus in total_locus :
-        file.write('Chromosome:'+str(locus.chrName)+' Locus_N°'+str(locus.locusN)\
-+' Start:'+str(locus.startSeq)+' End:'+str(locus.endSeq)+' Bcd_locus:'+locus.bcdLocus+'\n')
-        for seq in locus.seqProbe :
-            file.write(seq+'\n')
-            
-#fichier avec toutes les séquences (sans espace) uniquement : Full_sequence_Only
-fullSequence = pathResultFolder+os.sep+'2_Full_sequence_Only.txt'
-with open (fullSequence, 'w') as file :
-    for locus in total_locus :
-        for seq in locus.seqProbe :
-            file.write(seq.replace(' ','')+'\n')
-            
-#fichier avec résumé des informations (sans séquence) : Library_Summary
-Summary = pathResultFolder+os.sep+'3_Library_Summary.csv'
-with open (Summary, 'w') as file :
-    file.write('Chromosome,Locus_N°,Start,End,Barcode,PU.Fw,PU.Rev,Nbr_Probes\n')
-    for locus in total_locus :
-        file.write(str(locus.chrName)+','+str(locus.locusN)+','+str(locus.startSeq)\
-+','+str(locus.endSeq)+','+str(locus.bcdLocus)+','+locus.primers_Univ[0]+','\
-+locus.primers_Univ[2]+','+str(len(locus.seqProbe))+'\n')  
+# writing the file with detailed information (information for each locus and sequence)
+resultDetails = pathResultFolder + os.sep + "1_Library_details.txt"
+with open(resultDetails, mode="w", encoding="UTF-8") as file:
+    for locus in library.total_loci:
+        file.write(
+            f"Chromosome: {locus.chr_name} Locus_N°{locus.locus_n}\
+ Start:{locus.start_seq} End:{locus.end_seq} Bcd_locus:{locus.bcd_locus}\n"
+        )
+        for seq in locus.seq_probe:
+            file.write(seq + "\n")
 
-# Sauvegarde des parametres ayant servis pour générer la bibliothèque sous 
-# forme d'un fichier.json
+# writing the file with all primary probe sequences for all locus (without spaces)
+fullSequence = pathResultFolder + os.sep + "2_Full_sequence_Only.txt"
+with open(fullSequence, mode="w", encoding="UTF-8") as file:
+    for locus in library.total_loci:
+        for seq in locus.seq_probe:
+            file.write(seq.replace(" ", "") + "\n")
 
-parametersFilePath = pathResultFolder + os.sep + '4-OutputParameters.json'
+# writing file with summary information (without sequence) in the form of a table
+Summary = pathResultFolder + os.sep + "3_Library_Summary.csv"
+with open(Summary, mode="w", encoding="UTF-8") as file:
+    file.write("Chromosome,Locus_N°,Start,End,Barcode,PU.Fw,PU.Rev,Nbr_Probes\n")
+    for locus in library.total_loci:
+        file.write(
+            f"{locus.chr_name},{locus.locus_n},{locus.start_seq},\
+{locus.end_seq},{locus.bcd_locus},{locus.primers_univ[0]},\
+{locus.primers_univ[2]},{len(locus.seq_probe)}\n"
+        )
 
-#Récupérartion des paramètres
+# Saving the parameters used to generate the library as a .json file
+
+parametersFilePath = pathResultFolder + os.sep + "4-OutputParameters.json"
+
+# Parameter recovery
 parameters = {}
-parameters['Script_Name']='Classical_Library_Design.py'
-parameters['ChromosomeFile']=chromosomeFile
-parameters['ChromosomeFolder']=chromosomeFolder
-parameters['resolution']=resolution
-parameters['startLib']=startLib
-parameters['endLib']=startLib+(resolution*nbrLociTotal)
-parameters['nbrLociTotal']=nbrLociTotal
-parameters['nbrProbeByLocus']=nbrProbeByLocus
-parameters['nbrBcd_RT_ByProbe']=nbrBcd_RT_ByProbe
-parameters['PrimerU']=PrimerU
-parameters['bcd_TR_File']=bcd_RT_File
-parameters['primer_Univ_File']=primer_Univ_File
+parameters["Script_Name"] = "library_design.py"
+parameters["ChromosomeFile"] = chromosomeFile
+parameters["ChromosomeFolder"] = chromosomeFolder
+parameters["resolution"] = resolution
+parameters["startLib"] = startLib
+parameters["endLib"] = startLib + (resolution * nbrLociTotal)
+parameters["nbrLociTotal"] = nbrLociTotal
+parameters["nbrProbeByLocus"] = nbrProbeByLocus
+parameters["nbrBcd_RT_ByProbe"] = nbrBcd_RT_ByProbe
+parameters["PrimerU"] = PrimerU
+parameters["bcd_TR_File"] = bcd_RT_File
+parameters["primer_Univ_File"] = PRIMER_UNIV_FILE
 
 
-
-
-# écriture du fichier json.
-with open(parametersFilePath, mode="w") as file :
+# Write the 4-OutputParameters.json file
+with open(parametersFilePath, mode="w", encoding="UTF-8") as file:
     json.dump(parameters, file, indent=4)
 
-print('-'*40, '\n')
-print(f'All files concerning your library design are saved in {pathResultFolder}/')
+
+print(f"All files concerning your library design are saved in {pathResultFolder}/")
