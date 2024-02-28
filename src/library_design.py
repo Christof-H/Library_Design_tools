@@ -191,6 +191,10 @@ print(library.total_loci[0].seq_probe[0])
 
 # Checking primary probes length for all Locus
 min_length, max_length, diff_nbr, diff_pourcentage = library.check_length_seq_diff()
+print('-'*70)
+print(f"minimum size for all probes combined : {min_length}")
+print(f"maximum size for all probes combined : {max_length}")
+print(f"difference in size : {diff_pourcentage:.1f}%")
 
 # If there is a significant difference in size between the primary probes of all the Locus,
 #completion primary probes too small to standardise the length of the oligo-pool
