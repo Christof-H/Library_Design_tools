@@ -2,3 +2,5 @@ log.txt
 *.tmp
 tmp/*
 env/
+Library_Design_Results/
+src/models/__pycache__/
