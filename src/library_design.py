@@ -37,6 +37,7 @@ import datetime as dt
 import modules.data_import_fonction as data
 from models.library import Library
 from models.locus import Locus
+from models.invalidNbrLocusException import InvalidNbrLocusException
 
 # ---------------------------------------------------------------------------------------------
 #                               Importing library parameters
@@ -88,7 +89,7 @@ if not os.path.exists(result_folder):
 # ---------------------------------------------------------------------------------------------
 
 # Opening and formatting barcodes or RTs in the bcd_RT variable:
-bcd_RT = data.bcd_rt_format(bcd_rt_path)
+bcd_RT_list = data.bcd_rt_format(bcd_rt_path)
 
 # Opening and formatting the coordinates and genomic sequences of in the list_seq_genomic variable :
 list_seq_genomic = data.seq_genomic_format(genomic_path)
@@ -100,11 +101,27 @@ primer_univ_list = data.universal_primer_format(primer_univ_path)
 print_dashline()
 print("list_seq_genomic =", list_seq_genomic[0])
 print_dashline()
-print("bcd_RT =", bcd_RT[:2])
+print("bcd_RT =", bcd_RT_list[:2])
 print_dashline()
 print("primer_univ = ", "primer1 =", primer_univ_list["primer1"])
 print_dashline()
 
+# ---------------------------------------------------------------------------------------------
+#       Check the number of loci against the number of RTs or barcodes available
+# ---------------------------------------------------------------------------------------------
+def check_locus_rt_bcd():
+    """Check that there are enough barcodes or RTs for the total number of loci.
+
+    Raises:
+        InvalidNbrLocusException: If the number of available barcodes or RTs is insufficient
+            compared to the total number of loci.
+    """
+    type_bcdrt = "barcodes" if  bcd_rt_file == "Barcodes.csv" else "RTs"
+    if len(bcd_RT_list) < nbr_loci_total:
+        raise InvalidNbrLocusException(nbr_locus=nbr_loci_total, nbr_bcd_rt=len(bcd_RT_list),
+                                       type_bcd_rt=type_bcdrt)
+
+check_locus_rt_bcd()
 # ---------------------------------------------------------------------------------------------
 #                               Filling locus information
 #           (Primers Univ, start coordinates, end coordinates, DNA genomic sequences)
@@ -159,7 +176,7 @@ print(library.total_loci[0])
 count = 0
 for locus in library.total_loci:
     seq_with_bcd = []
-    bcd_RT_seq = bcd_RT[count][1]
+    bcd_RT_seq = bcd_RT_list[count][1]
 
     for genomic_seq in locus.seq_probe:
         if nbr_bcd_rt_by_probe == 2:
