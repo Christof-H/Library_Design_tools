@@ -64,6 +64,7 @@ nbr_bcd_rt_by_probe = input_parameters["nbr_bcd_rt_by_probe"]
 primer_univ = input_parameters["primer_univ"]
 bcd_rt_file = input_parameters["bcd_rt_file"]
 max_diff_percent = input_parameters["max_diff_percent"]
+design_type =  input_parameters["design_type"]
 end_lib = start_lib + (nbr_loci_total * resolution)
 
 
@@ -122,6 +123,7 @@ def check_locus_rt_bcd():
                                        type_bcd_rt=type_bcdrt)
 
 check_locus_rt_bcd()
+
 # ---------------------------------------------------------------------------------------------
 #                               Filling locus information
 #           (Primers Univ, start coordinates, end coordinates, DNA genomic sequences)
@@ -129,42 +131,78 @@ check_locus_rt_bcd()
 
 # Search for the desired universal primers
 primer = [primer_univ_list[key] for key, values in primer_univ_list.items() if key == primer_univ]
-print(primer)
 primer = primer[0]
 
+
+library = Library()
+
+if design_type == "locus_length":
 # Calculation of start and end coordinates for each locus
-start_positions = [start_lib + x * resolution for x in range(nbr_loci_total)]
-end_positions = [start_lib + (x + 1) * resolution for x in range(nbr_loci_total)]
+    start_positions = [start_lib + x * resolution for x in range(nbr_loci_total)]
+    end_positions = [start_lib + (x + 1) * resolution for x in range(nbr_loci_total)]
+# Filling the Library class with all the Locus
+    for i, start, end in zip(range(nbr_loci_total), start_positions, end_positions):
+        library.add_locus(
+            Locus(
+                locus_n=i + 1,
+                chr_name=chromosome_file.split(".")[0],
+                start_seq=start,
+                end_seq=end,
+                primers_univ=primer,
+            )
+        )
+# Allocation of the genomic DNA sequences of the primary probes for each locus of the Library
+#according to the coordinates (start, end)
+    for locus in library.total_loci:
+        temp = []
+        for seq in list_seq_genomic:
+            if locus.start_seq <= int(seq[0]) and int(seq[1]) < locus.end_seq:
+                temp.append([seq[0], seq[2]])
+            else:
+                pass
+
+        if len(temp) > nbr_probe_by_locus:
+            random.shuffle(temp)
+            temp = temp[:nbr_probe_by_locus]
+            temp.sort()
+        locus.seq_probe = [x[1] for x in temp]
+
+if design_type == "nbr_probes":
+# Reduce length list of genomic sequences to avoid  iteration on full genomic sequence
+    list_seq_genomic_reduced = []
+    for seq in list_seq_genomic :
+        if start_lib <= int(seq[0]) and len(list_seq_genomic_reduced) < (nbr_loci_total * nbr_probe_by_locus):
+            list_seq_genomic_reduced.append(seq)
+
+def recover_genomic_seq(locus, probe_by_locus, seq_list_sorted):
+    list_seq_locus = seq_list_sorted[(locus*10-10):(locus*probe_by_locus)]
+    final_seq =[seq[2] for seq in list_seq_locus]
+    start_coord = list_seq_locus[0][0]
+    end_coord = list_seq_locus[-1][1]
+    return start_coord, end_coord, final_seq
+
 
 # Filling the Library class with all the Locus
-library = Library()
-for i, start, end in zip(range(nbr_loci_total), start_positions, end_positions):
+for i in range(1,nbr_loci_total+1):
+    start, end, list_seq = recover_genomic_seq(i, nbr_probe_by_locus, list_seq_genomic_reduced)
     library.add_locus(
         Locus(
-            locus_n=i + 1,
+            locus_n=i,
             chr_name=chromosome_file.split(".")[0],
-            start_seq=start,
-            end_seq=end,
+            start_seq = start,
+            end_seq = end,
             primers_univ=primer,
+            bcd_locus = "error",
+            seq_probe = list_seq
         )
     )
 
 
-# Allocation of the genomic DNA sequences of the primary probes for each locus of the Library
-#according to the coordinates (start, end)
-for locus in library.total_loci:
-    temp = []
-    for seq in list_seq_genomic:
-        if locus.start_seq <= int(seq[0]) and int(seq[1]) < locus.end_seq:
-            temp.append([seq[0], seq[2]])
-        else:
-            pass
 
-    if len(temp) > nbr_probe_by_locus:
-        random.shuffle(temp)
-        temp = temp[:nbr_probe_by_locus]
-        temp.sort()
-    locus.seq_probe = [x[1] for x in temp]
+
+
+
+
 
 # Display of a locus as an example
 print_dashline()
@@ -177,6 +215,7 @@ count = 0
 for locus in library.total_loci:
     seq_with_bcd = []
     bcd_RT_seq = bcd_RT_list[count][1]
+    locus.bcd_locus = bcd_RT_list[count][0]
 
     for genomic_seq in locus.seq_probe:
         if nbr_bcd_rt_by_probe == 2:
