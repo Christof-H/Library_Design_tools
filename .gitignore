@@ -4,6 +4,7 @@ tmp/*
 env/
 Library_Design_Results/
 src/models/__pycache__/
+src/modules/__pycache__/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
