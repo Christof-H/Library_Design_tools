@@ -1,26 +1,22 @@
 import random
 from models.locus import Locus
 
-
 class Library:
-    """Library store a clooection of Locus
 
-    Attributes:
-    -----------
-    total_loci (list[Locus]):
-        collection a all Locus for this library
-
-    Methods:
-    --------
-    add_locus(Locus):
-        add a locus in the Locus collection (total_loci)
-    check_length_seq_diff:
-        Compare length sequences in all Locus of the Library
-
-    """
-
-    def __init__(self) -> None:
-        self.total_loci = None
+    def __init__(
+            self,
+            chromosome_name: str,
+            start_lib: int,
+            nbr_loci_total: int,
+            max_diff_percent: int,
+            design_type: str
+    ) -> None:
+        self.chromosome_name = chromosome_name
+        self.start_lib = start_lib
+        self.nbr_loci_total = nbr_loci_total
+        self.max_diff_percent = max_diff_percent
+        self.design_type = design_type
+        self.loci_list = None
 
     def add_locus(self, locus: Locus):
         """add a locus in the Locus collection (total_loci)
@@ -29,9 +25,42 @@ class Library:
             locus (Locus):
                 A Locus object
         """
-        if self.total_loci is None:
-            self.total_loci = []
-        self.total_loci.append(locus)
+        if self.loci_list is None:
+            self.loci_list = []
+        self.loci_list.append(locus)
+
+    def reduce_list_seq(self,
+                        seq_list: list[list[str]],
+                        resolution: int,
+                        nbr_probe_by_locus: int
+    ) ->list[list[str]]:
+        """Reduces the list of genomic sequences to library coordinates only to avoid 
+        iterating over all the genomic sequences of the chosen chromosome each time.
+
+        Args:
+            seq_list (list[list[str]]):
+                list of genomic sequences with coordinates, based on target chromosome.
+                [[80000, 80020, 'CGATCGTGATGCTAGCATGT'], ...]
+            resolution (int):
+                length of the Locus
+            nbr_probe_by_locus (int):
+                number of probes in a Locus
+
+        Returns:
+            (list[list[str]): 
+                A list of sequence reduced: [[80000, 80020, 'CGATCGTGATGCTAGCATGT'], ...]
+        """
+        list_seq_genomic_reduced = []
+        if  self.design_type == "locus_length":
+            for seq in seq_list :
+                if int(seq[0]) >= self.start_lib and int(seq[1]) <= (self.start_lib + (self.nbr_loci_total * resolution)) :
+                    list_seq_genomic_reduced.append(seq)
+        elif self.design_type == "nbr_probes":
+            for seq in seq_list :
+                if self.start_lib <= int(seq[0]) and len(list_seq_genomic_reduced) < (self.nbr_loci_total * nbr_probe_by_locus):
+                    list_seq_genomic_reduced.append(seq)
+        return list_seq_genomic_reduced
+    
 
     def check_length_seq_diff(self) -> tuple[int, int, int, int]:
         """Evaluation of the length (min, max) of the primary probes of the entire library and
@@ -46,7 +75,7 @@ class Library:
         """
         minimal_length = None
         maximal_length = None
-        for locus in self.total_loci:
+        for locus in self.loci_list:
             for seq in locus.seq_probe:
                 if not minimal_length and not maximal_length:
                     minimal_length = len(seq.replace(" ", ""))
@@ -60,7 +89,7 @@ class Library:
         return minimal_length, maximal_length, difference_nbre, difference_percentage
 
     def completion(
-        self, difference_percentage: int, max_length: int, max_diff_percent: int = 10
+        self, difference_percentage: int, max_length: int
     ) -> None:
         """Random nucleotide completion function for sequences with too large a size difference (default=10%)
 
@@ -69,12 +98,10 @@ class Library:
                 difference in size between primary probes (for all Locus) expressed as a percentage
             max_length (int):
                 maximum size between all the primary probe sequences of all Locus
-            max_diff_percent (int, optional):
-                maximum percentage difference in size allowed Defaults to 10.
         """
 
-        if difference_percentage >= max_diff_percent:
-            for locus in self.total_loci:
+        if difference_percentage >= self.max_diff_percent:
+            for locus in self.loci_list:
                 seq_completion = []
                 for seq in locus.seq_probe:
                     diff_seq_with_max = max_length - len(seq.replace(" ", ""))
