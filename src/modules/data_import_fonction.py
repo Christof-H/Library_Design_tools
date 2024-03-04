@@ -48,6 +48,6 @@ def seq_genomic_format(path : str) -> list[int , int, str]:
     with open(path, mode='r', encoding='UTF-8') as file :
         for line in file :
             data = line.split('\t')
-            seq_genomic_list.append([int(data[1]), int(data[1]), data[3]])
+            seq_genomic_list.append([int(data[1]), int(data[2]), data[3]])
     return seq_genomic_list
 

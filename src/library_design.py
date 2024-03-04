@@ -256,11 +256,11 @@ with open(full_sequence, mode="w", encoding="UTF-8") as file:
 # writing file with summary information (without sequence) in the form of a table
 summary = pathresult_folder + os.sep + "3_Library_summary.csv"
 with open(summary, mode="w", encoding="UTF-8") as file:
-    file.write("Chromosome,Locus_N°,Start,End,Barcode,PU.Fw,PU.Rev,Nbr_Probes\n")
+    file.write("Chromosome,Locus_N°,Start,End,Region size, Barcode,PU.Fw,PU.Rev,Nbr_Probes\n")
     for locus in library.loci_list:
         file.write(
             f"{locus.chr_name},{locus.locus_n},{locus.start_seq},\
-{locus.end_seq},{locus.bcd_locus},{locus.primers_univ[0]},\
+{locus.end_seq},{locus.end_seq-locus.start_seq},{locus.bcd_locus},{locus.primers_univ[0]},\
 {locus.primers_univ[2]},{len(locus.seq_probe)}\n"
         )
 
