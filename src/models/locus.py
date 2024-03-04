@@ -105,18 +105,16 @@ class Locus:
             tuple[list[str], int, int]: list sequence for the specific Locus, Locus start coordinates, Locus end coordinates
         """
         if  self.design_type == "locus_length":
-            print(f" Locus : {locus}")
             # Calculation of start and end coordinates for each locus
             start_positions = [start_lib + x * self.resolution for x in range(nbr_loci_total)]
             end_positions = [start_lib + (x + 1) * self.resolution for x in range(nbr_loci_total)]
             temp = []
             for seq in seq_list_reduced:
                 if (start_positions[locus-1] <= seq[0]) and (seq[1] < end_positions[locus-1]):
-                    print(seq)
                     temp.append(seq)
                 else:
                     pass
-            print(temp[0], temp[-1])
+
             final_seq_list = self.check_nbr_probes(temp)
             start = start_positions[locus-1] # to be more precise : final_seq_list[0][0]
             end = end_positions[locus-1] # to be more precise : final_seq_list[-1][1]
@@ -134,7 +132,7 @@ class Locus:
 locus Number : {self.locus_n}\n\
 bcd or RT for this locus : {self.bcd_locus}\n\
 Locus start coordinates : {self.start_seq}\n\
-Locus enf coordinates : {self.end_seq}\n"
+Locus end coordinates : {self.end_seq}\n"
         if self.primers_univ and self.seq_probe:
             string += f"Primer Univ Fw :{self.primers_univ[0]}\n\
 Primer Univ Rev :{self.primers_univ[2]}\n\
