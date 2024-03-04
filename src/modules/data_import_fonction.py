@@ -5,7 +5,7 @@ def universal_primer_format(path : str) -> dict[str, str]:
         path (str): File path of universal primer couple
 
     Returns:
-        dict[str, list(str)]: [description]
+        dict[str, list(str)]: name and sequence for universal primer
     """
 
     primer_univ={}
@@ -34,20 +34,20 @@ def bcd_rt_format(path : str) -> list[str]:
         return bcd_rt_list
 
 
-def seq_genomic_format(path : str) -> list[str]:
+def seq_genomic_format(path : str) -> list[int , int, str]:
     """Function for opening, formatting and storing genomic sequences.
 
     Args:
         path (str): File path of genomic sequences
 
     Returns:
-        list[str]: [description]
+        list[int, int, str]: sequence of genomic DNA with coordinates
     """
 
     seq_genomic_list = []
     with open(path, mode='r', encoding='UTF-8') as file :
         for line in file :
             data = line.split('\t')
-            seq_genomic_list.append(data[1:4])
+            seq_genomic_list.append([int(data[1]), int(data[1]), data[3]])
     return seq_genomic_list
 

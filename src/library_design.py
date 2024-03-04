@@ -28,7 +28,6 @@ universal primers.
 
 """
 import os
-import random
 import copy
 import json
 
@@ -75,6 +74,8 @@ genomic_path = chromosome_folder + os.sep + chromosome_file
 primer_univ_path = resources_path + os.sep + PRIMER_UNIV_FILE
 
 def print_dashline():
+    """print a dashline"""
+
     print('-'*70)
 
 # ---------------------------------------------------------------------------------------------
@@ -133,86 +134,47 @@ check_locus_rt_bcd()
 primer = [primer_univ_list[key] for key, values in primer_univ_list.items() if key == primer_univ]
 primer = primer[0]
 
+library = Library(
+    chromosome_name = chromosome_file.split(".")[0],
+    start_lib = start_lib,
+    nbr_loci_total = nbr_loci_total,
+    max_diff_percent = max_diff_percent,
+    design_type = design_type
+)
 
-library = Library()
-
-if design_type == "locus_length":
-# Calculation of start and end coordinates for each locus
-    start_positions = [start_lib + x * resolution for x in range(nbr_loci_total)]
-    end_positions = [start_lib + (x + 1) * resolution for x in range(nbr_loci_total)]
-# Filling the Library class with all the Locus
-    for i, start, end in zip(range(nbr_loci_total), start_positions, end_positions):
-        library.add_locus(
-            Locus(
-                locus_n=i + 1,
-                chr_name=chromosome_file.split(".")[0],
-                start_seq=start,
-                end_seq=end,
-                primers_univ=primer,
-            )
-        )
-# Allocation of the genomic DNA sequences of the primary probes for each locus of the Library
-#according to the coordinates (start, end)
-    for locus in library.total_loci:
-        temp = []
-        for seq in list_seq_genomic:
-            if locus.start_seq <= int(seq[0]) and int(seq[1]) < locus.end_seq:
-                temp.append([seq[0], seq[2]])
-            else:
-                pass
-
-        if len(temp) > nbr_probe_by_locus:
-            random.shuffle(temp)
-            temp = temp[:nbr_probe_by_locus]
-            temp.sort()
-        locus.seq_probe = [x[1] for x in temp]
-
-if design_type == "nbr_probes":
-# Reduce length list of genomic sequences to avoid  iteration on full genomic sequence
-    list_seq_genomic_reduced = []
-    for seq in list_seq_genomic :
-        if start_lib <= int(seq[0]) and len(list_seq_genomic_reduced) < (nbr_loci_total * nbr_probe_by_locus):
-            list_seq_genomic_reduced.append(seq)
-
-def recover_genomic_seq(locus, probe_by_locus, seq_list_sorted):
-    list_seq_locus = seq_list_sorted[(locus*10-10):(locus*probe_by_locus)]
-    final_seq =[seq[2] for seq in list_seq_locus]
-    start_coord = list_seq_locus[0][0]
-    end_coord = list_seq_locus[-1][1]
-    return start_coord, end_coord, final_seq
-
+list_seq_genomic_reduced = library.reduce_list_seq(list_seq_genomic,
+                                                   resolution=resolution,
+                                                   nbr_probe_by_locus=nbr_probe_by_locus)
 
 # Filling the Library class with all the Locus
-for i in range(1,nbr_loci_total+1):
-    start, end, list_seq = recover_genomic_seq(i, nbr_probe_by_locus, list_seq_genomic_reduced)
-    library.add_locus(
-        Locus(
-            locus_n=i,
-            chr_name=chromosome_file.split(".")[0],
-            start_seq = start,
-            end_seq = end,
-            primers_univ=primer,
-            bcd_locus = "error",
-            seq_probe = list_seq
-        )
-    )
-
-
-
-
-
+for i in range(1, library.nbr_loci_total + 1):
+    locus = Locus(primers_univ=primer,locus_n=i,
+                  chr_name = library.chromosome_name,
+                  resolution = resolution,
+                  nbr_probe_by_locus = nbr_probe_by_locus,
+                  design_type = design_type
+                  )
+    list_seq, start, end = locus.recover_genomic_seq(i,
+                                                     nbr_loci_total,
+                                                     start_lib,
+                                                     list_seq_genomic_reduced)
+    locus.start_seq = start
+    locus.end_seq = end
+    # locus.primers_univ=primer,
+    locus.seq_probe = list_seq
+    library.add_locus(locus)
 
 
 
 # Display of a locus as an example
 print_dashline()
 print ("Locus exemple :")
-print(library.total_loci[0])
+print(library.loci_list[0])
 
 
 # Sequences for barcodes/RTs added to primary probes according to locus
 count = 0
-for locus in library.total_loci:
+for locus in library.loci_list:
     seq_with_bcd = []
     bcd_RT_seq = bcd_RT_list[count][1]
     locus.bcd_locus = bcd_RT_list[count][0]
@@ -232,19 +194,18 @@ for locus in library.total_loci:
 
 # Sequences for universal primers added to the primary probes at each end
 
-for locus in library.total_loci:
+for locus in library.loci_list:
     p_fw = copy.deepcopy(locus.primers_univ[1])
     p_rev = copy.deepcopy(locus.primers_univ[3])
     temp = list()
     temp = [f"{p_fw} {x} {p_rev}" for x in locus.seq_probe]
-    # temp=[p_fw+' '+ x +' '+p_rev for x in locus.seqProbe]
     locus.seq_probe = temp
 
 # Display example of a final primary probe sequence
 print_dashline()
 print("example of a primary probe sequence :")
 print_dashline()
-print(library.total_loci[0].seq_probe[0])
+print(library.loci_list[0].seq_probe[0])
 
 # ---------------------------------------------------------------------------------------------
 #                               Checking and completion
@@ -261,7 +222,7 @@ print(f"difference in size : {diff_percentage:.1f}%")
 # If there is a significant difference in size between the primary probes of all the Locus,
 #completion primary probes too small to standardise the length of the oligo-pool
 # ATTENTION: 3' completion of the sequence
-library.completion(diff_percentage, max_length, max_diff_percent)
+library.completion(diff_percentage, max_length)
 
 
 # ---------------------------------------------------------------------------------------------
@@ -277,7 +238,7 @@ os.mkdir(pathresult_folder)
 # writing the file with detailed information (information for each locus and sequence)
 result_details = pathresult_folder + os.sep + "1_Library_details.txt"
 with open(result_details, mode="w", encoding="UTF-8") as file:
-    for locus in library.total_loci:
+    for locus in library.loci_list:
         file.write(
             f"Chromosome: {locus.chr_name} Locus_N°{locus.locus_n}\
  Start:{locus.start_seq} End:{locus.end_seq} Bcd_locus:{locus.bcd_locus}\n"
@@ -288,7 +249,7 @@ with open(result_details, mode="w", encoding="UTF-8") as file:
 # writing the file with all primary probe sequences for all locus (without spaces)
 full_sequence = pathresult_folder + os.sep + "2_Full_sequence_Only.txt"
 with open(full_sequence, mode="w", encoding="UTF-8") as file:
-    for locus in library.total_loci:
+    for locus in library.loci_list:
         for seq in locus.seq_probe:
             file.write(seq.replace(" ", "") + "\n")
 
@@ -296,7 +257,7 @@ with open(full_sequence, mode="w", encoding="UTF-8") as file:
 summary = pathresult_folder + os.sep + "3_Library_summary.csv"
 with open(summary, mode="w", encoding="UTF-8") as file:
     file.write("Chromosome,Locus_N°,Start,End,Barcode,PU.Fw,PU.Rev,Nbr_Probes\n")
-    for locus in library.total_loci:
+    for locus in library.loci_list:
         file.write(
             f"{locus.chr_name},{locus.locus_n},{locus.start_seq},\
 {locus.end_seq},{locus.bcd_locus},{locus.primers_univ[0]},\
@@ -322,6 +283,7 @@ parameters["primer_univ"] = primer_univ
 parameters["bcd_TR_File"] = bcd_rt_file
 parameters["primer_Univ_File"] = PRIMER_UNIV_FILE
 parameters["max_diff_percent"] = max_diff_percent
+parameters["design_type"] = design_type
 
 
 # Write the 4-OutputParameters.json file

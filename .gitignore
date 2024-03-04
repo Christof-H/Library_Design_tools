@@ -3,11 +3,11 @@ log.txt
 tmp/*
 env/
 Library_Design_Results/
-src/models/__pycache__/
-src/modules/__pycache__/
+models/__pycache__/*
+modules/__pycache__/*
 
 # Byte-compiled / optimized / DLL files
-__pycache__/
+*/__pycache__/*
 *.py[cod]
 *$py.class
 
