@@ -31,9 +31,8 @@ import os
 import copy
 import json
 
-
 import datetime as dt
-import modules.data_import_fonction as data
+import modules.data_import_function as data
 from models.library import Library
 from models.locus import Locus
 from models.invalidNbrLocusException import InvalidNbrLocusException
@@ -44,14 +43,12 @@ from models.invalidNbrLocusException import InvalidNbrLocusException
 src_folder = os.path.dirname(os.path.realpath(__file__))
 script_folder = os.path.abspath(os.path.join(src_folder, ".."))
 
-
 JSON_FILE = "input_parameters.json"
 PRIMER_UNIV_FILE = "Primer_univ.csv"
 
 json_path = src_folder + os.sep + JSON_FILE
 with open(json_path, mode="r", encoding="UTF-8") as file:
     input_parameters = json.load(file)
-
 
 chromosome_file = input_parameters["chromosome_file"]
 chromosome_folder = input_parameters["chromosome_folder"]
@@ -63,20 +60,20 @@ nbr_bcd_rt_by_probe = input_parameters["nbr_bcd_rt_by_probe"]
 primer_univ = input_parameters["primer_univ"]
 bcd_rt_file = input_parameters["bcd_rt_file"]
 max_diff_percent = input_parameters["max_diff_percent"]
-design_type =  input_parameters["design_type"]
+design_type = input_parameters["design_type"]
 end_lib = start_lib + (nbr_loci_total * resolution)
-
-
 
 resources_path = src_folder + os.sep + "resources"
 bcd_rt_path = resources_path + os.sep + bcd_rt_file
 genomic_path = chromosome_folder + os.sep + chromosome_file
 primer_univ_path = resources_path + os.sep + PRIMER_UNIV_FILE
 
+
 def print_dashline():
     """print a dashline"""
 
-    print('-'*70)
+    print('-' * 70)
+
 
 # ---------------------------------------------------------------------------------------------
 #                                   Creating result folder
@@ -99,7 +96,6 @@ list_seq_genomic = data.seq_genomic_format(genomic_path)
 # Opening and formatting universal primers in the primer_univ variable : :
 primer_univ_list = data.universal_primer_format(primer_univ_path)
 
-
 print_dashline()
 print("list_seq_genomic =", list_seq_genomic[0])
 print_dashline()
@@ -107,6 +103,7 @@ print("bcd_RT =", bcd_RT_list[:2])
 print_dashline()
 print("primer_univ = ", "primer1 =", primer_univ_list["primer1"])
 print_dashline()
+
 
 # ---------------------------------------------------------------------------------------------
 #       Check the number of loci against the number of RTs or barcodes available
@@ -118,10 +115,11 @@ def check_locus_rt_bcd():
         InvalidNbrLocusException: If the number of available barcodes or RTs is insufficient
             compared to the total number of loci.
     """
-    type_bcdrt = "barcodes" if  bcd_rt_file == "Barcodes.csv" else "RTs"
+    type_bcdrt = "barcodes" if bcd_rt_file == "Barcodes.csv" else "RTs"
     if len(bcd_RT_list) < nbr_loci_total:
         raise InvalidNbrLocusException(nbr_locus=nbr_loci_total, nbr_bcd_rt=len(bcd_RT_list),
                                        type_bcd_rt=type_bcdrt)
+
 
 check_locus_rt_bcd()
 
@@ -135,11 +133,11 @@ primer = [primer_univ_list[key] for key, values in primer_univ_list.items() if k
 primer = primer[0]
 
 library = Library(
-    chromosome_name = chromosome_file.split(".")[0],
-    start_lib = start_lib,
-    nbr_loci_total = nbr_loci_total,
-    max_diff_percent = max_diff_percent,
-    design_type = design_type
+    chromosome_name=chromosome_file.split(".")[0],
+    start_lib=start_lib,
+    nbr_loci_total=nbr_loci_total,
+    max_diff_percent=max_diff_percent,
+    design_type=design_type
 )
 
 list_seq_genomic_reduced = library.reduce_list_seq(list_seq_genomic,
@@ -148,11 +146,11 @@ list_seq_genomic_reduced = library.reduce_list_seq(list_seq_genomic,
 
 # Filling the Library class with all the Locus
 for i in range(1, library.nbr_loci_total + 1):
-    locus = Locus(primers_univ=primer,locus_n=i,
-                  chr_name = library.chromosome_name,
-                  resolution = resolution,
-                  nbr_probe_by_locus = nbr_probe_by_locus,
-                  design_type = design_type
+    locus = Locus(primers_univ=primer, locus_n=i,
+                  chr_name=library.chromosome_name,
+                  resolution=resolution,
+                  nbr_probe_by_locus=nbr_probe_by_locus,
+                  design_type=design_type
                   )
     list_seq, start, end = locus.recover_genomic_seq(i,
                                                      nbr_loci_total,
@@ -164,13 +162,10 @@ for i in range(1, library.nbr_loci_total + 1):
     locus.seq_probe = list_seq
     library.add_locus(locus)
 
-
-
 # Display of a locus as an example
 print_dashline()
-print ("Locus exemple :")
+print("Locus exemple :")
 print(library.loci_list[0])
-
 
 # Sequences for barcodes/RTs added to primary probes according to locus
 count = 0
@@ -190,7 +185,6 @@ for locus in library.loci_list:
             seq_with_bcd.append(f"{bcd_RT_seq * 3} {genomic_seq} {bcd_RT_seq * 2}")
     count += 1
     locus.seq_probe = seq_with_bcd
-
 
 # Sequences for universal primers added to the primary probes at each end
 
@@ -220,10 +214,9 @@ print(f"maximum size for all probes combined : {max_length}")
 print(f"difference in size : {diff_percentage:.1f}%")
 
 # If there is a significant difference in size between the primary probes of all the Locus,
-#completion primary probes too small to standardise the length of the oligo-pool
+# completion primary probes too small to standardise the length of the oligo-pool
 # ATTENTION: 3' completion of the sequence
 library.completion(diff_percentage, max_length)
-
 
 # ---------------------------------------------------------------------------------------------
 #                           Writing the various results files
@@ -233,7 +226,6 @@ library.completion(diff_percentage, max_length)
 date_now = dt.datetime.now().strftime("%Y%m%d_%H%M")
 pathresult_folder = result_folder + os.sep + date_now
 os.mkdir(pathresult_folder)
-
 
 # writing the file with detailed information (information for each locus and sequence)
 result_details = pathresult_folder + os.sep + "1_Library_details.txt"
@@ -260,7 +252,7 @@ with open(summary, mode="w", encoding="UTF-8") as file:
     for locus in library.loci_list:
         file.write(
             f"{locus.chr_name},{locus.locus_n},{locus.start_seq},\
-{locus.end_seq},{locus.end_seq-locus.start_seq},{locus.bcd_locus},{locus.primers_univ[0]},\
+{locus.end_seq},{locus.end_seq - locus.start_seq},{locus.bcd_locus},{locus.primers_univ[0]},\
 {locus.primers_univ[2]},{len(locus.seq_probe)}\n"
         )
 
@@ -285,10 +277,8 @@ parameters["primer_Univ_File"] = PRIMER_UNIV_FILE
 parameters["max_diff_percent"] = max_diff_percent
 parameters["design_type"] = design_type
 
-
 # Write the 4-OutputParameters.json file
 with open(parameters_file_path, mode="w", encoding="UTF-8") as file:
     json.dump(parameters, file, indent=4)
-
 
 print(f"All files concerning your library design are saved in {pathresult_folder}/")
