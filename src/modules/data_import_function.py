@@ -1,11 +1,11 @@
-def universal_primer_format(path : str) -> dict[str, str]:
+def universal_primer_format(path : str) -> dict[str, list[str]]:
     """Function for opening, formatting and storing universal primer sequences.
 
     Args:
         path (str): File path of universal primer couple
 
     Returns:
-        dict[str, list(str)]: name and sequence for universal primer
+        dict[str, list[str]]: name and sequence for universal primer
     """
 
     primer_univ={}
@@ -16,7 +16,7 @@ def universal_primer_format(path : str) -> dict[str, str]:
     return primer_univ
 
 
-def bcd_rt_format(path : str) -> list[str]:
+def bcd_rt_format(path : str) -> list[list[str]]:
     """Function for opening, formatting and storing barcode or RT sequences.
 
     Args:
