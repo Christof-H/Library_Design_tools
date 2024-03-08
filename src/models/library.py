@@ -1,5 +1,5 @@
 import random
-from models.locus import Locus
+from src.models.locus import Locus
 
 class Library:
 
@@ -30,10 +30,10 @@ class Library:
         self.loci_list.append(locus)
 
     def reduce_list_seq(self,
-                        seq_list: list[list[str]],
+                        seq_list: list[list[int, int, str]],
                         resolution: int,
                         nbr_probe_by_locus: int
-    ) ->list[list[str]]:
+    ) ->list[list[int, int, str]]:
         """Reduces the list of genomic sequences to library coordinates only to avoid 
         iterating over all the genomic sequences of the chosen chromosome each time.
 
