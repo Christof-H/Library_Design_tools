@@ -1,6 +1,6 @@
 import pytest
 
-from src.modules.data_import_fonction import bcd_rt_format, universal_primer_format, seq_genomic_format
+from src.modules.data_import_function import bcd_rt_format, universal_primer_format, seq_genomic_format
 
 
 @pytest.fixture
