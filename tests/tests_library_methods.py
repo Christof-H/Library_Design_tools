@@ -69,12 +69,12 @@ def test_check_length_seq_diff_check_returns_values(setup):
 def test_completion_without_threshold_exceeded(setup, capsys):
     sequences, _, library_with_loci = setup
     library_with_loci.max_diff_percent=20
-    library_with_loci.completion(14.28, 35)
+    library_with_loci.completion(14, 35)
     captured_stdout = capsys.readouterr().out
     assert captured_stdout == '-'*70+'\n'+'No completion required\n'+'-'*70+'\n'
 
 def test_completion_with_threshold_exceeded(setup, capsys):
     sequences, _, library_with_loci = setup
-    library_with_loci.completion(14.28, 135)
+    library_with_loci.completion(14, 135)
     captured_stdout = capsys.readouterr().out
     assert captured_stdout == '-' * 70 + '\n' + 'Completion finished\n' + '-' * 70 + '\n'
