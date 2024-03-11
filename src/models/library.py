@@ -1,6 +1,7 @@
 import random
 from src.models.locus import Locus
 
+
 class Library:
 
     def __init__(
@@ -33,7 +34,7 @@ class Library:
                         seq_list: list[list[int, int, str]],
                         resolution: int,
                         nbr_probe_by_locus: int
-    ) ->list[list[int, int, str]]:
+                        ) -> list[list[int, int, str]]:
         """Reduces the list of genomic sequences to library coordinates only to avoid 
         iterating over all the genomic sequences of the chosen chromosome each time.
 
@@ -51,16 +52,17 @@ class Library:
                 A list of sequence reduced: [[80000, 80020, 'CGATCGTGATGCTAGCATGT'], ...]
         """
         list_seq_genomic_reduced = []
-        if  self.design_type == "locus_length":
-            for seq in seq_list :
-                if int(seq[0]) >= self.start_lib and int(seq[1]) <= (self.start_lib + (self.nbr_loci_total * resolution)) :
+        if self.design_type == "locus_length":
+            for seq in seq_list:
+                if int(seq[0]) >= self.start_lib and int(seq[1]) <= (
+                        self.start_lib + (self.nbr_loci_total * resolution)):
                     list_seq_genomic_reduced.append(seq)
         elif self.design_type == "nbr_probes":
-            for seq in seq_list :
-                if self.start_lib <= int(seq[0]) and len(list_seq_genomic_reduced) < (self.nbr_loci_total * nbr_probe_by_locus):
+            for seq in seq_list:
+                if self.start_lib <= int(seq[0]) and len(list_seq_genomic_reduced) < (
+                        self.nbr_loci_total * nbr_probe_by_locus):
                     list_seq_genomic_reduced.append(seq)
         return list_seq_genomic_reduced
-    
 
     def check_length_seq_diff(self) -> tuple[int, int, int, int]:
         """Evaluation of the length (min, max) of the primary probes of the entire library and
@@ -70,7 +72,7 @@ class Library:
             tuple[int, int, int, int]:
                 minimal probe size
                 maximum probe size
-                difference in nucleutodes between the smallest and largest probe
+                difference in nucleotides between the smallest and largest probe
                 difference in size expressed as a percentage
         """
         minimal_length = None
@@ -85,11 +87,11 @@ class Library:
                 elif len(seq.replace(" ", "")) > maximal_length:
                     maximal_length = len(seq.replace(" ", ""))
         difference_percentage = 100 - (minimal_length * 100 / maximal_length)
-        difference_nbre = maximal_length - minimal_length
-        return minimal_length, maximal_length, difference_nbre, difference_percentage
+        difference_nbr = maximal_length - minimal_length
+        return minimal_length, maximal_length, difference_nbr, difference_percentage
 
     def completion(
-        self, difference_percentage: int, max_length: int
+            self, difference_percentage: int, max_length: int
     ) -> None:
         """Random nucleotide completion function for sequences with too large a size difference (default=10%)
 
