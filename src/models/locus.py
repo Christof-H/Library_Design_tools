@@ -104,7 +104,7 @@ class Locus:
         Returns:
             tuple[list[str], int, int]: list sequence for the specific Locus, Locus start coordinates, Locus end coordinates
         """
-        if  self.design_type == "locus_length":
+        if self.design_type == "locus_length":
             # Calculation of start and end coordinates for each locus
             start_positions = [start_lib + x * self.resolution for x in range(nbr_loci_total)]
             end_positions = [start_lib + (x + 1) * self.resolution for x in range(nbr_loci_total)]
