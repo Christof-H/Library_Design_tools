@@ -1,11 +1,13 @@
 {
-    "ChromosomeFile": "chr3L.bed",
-    "ChromosomeFolder": "/mnt/PALM_dataserv/DATA/Commun/genomes/dm6/OligoMiner/dm6_balanced/",
+    "chromosome_file": "chr3L.bed",
+    "chromosome_folder": "/mnt/PALM_dataserv/DATA/Commun/genomes/dm6/OligoMiner/dm6_balanced/",
+    "design_type": "nbr_probes",
     "resolution": 10000,
-    "startLib": 8882600,
-    "nbrLociTotal": 20,
-    "nbrProbeByLocus": 45,
-    "nbrBcd_RT_ByProbe": 3,
-    "PrimerU": "primer2",
-    "bcd_RT_File": "List_RT.csv"
+    "start_lib": 8883000,
+    "nbr_loci_total": 20,
+    "nbr_probe_by_locus": 100,
+    "nbr_bcd_rt_by_probe": 3,
+    "primer_univ": "primer2",
+    "bcd_rt_file": "List_RT.csv",
+    "max_diff_percent": 10
 }
