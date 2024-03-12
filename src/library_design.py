@@ -88,7 +88,7 @@ if not os.path.exists(result_folder):
 # ---------------------------------------------------------------------------------------------
 
 # Opening and formatting barcodes or RTs in the bcd_RT variable:
-bcd_RT_list = data.bcd_rt_format(bcd_rt_path)
+bcd_rt_list = data.bcd_rt_format(bcd_rt_path)
 
 # Opening and formatting the coordinates and genomic sequences of in the list_seq_genomic variable :
 list_seq_genomic = data.seq_genomic_format(genomic_path)
@@ -99,7 +99,7 @@ primer_univ_list = data.universal_primer_format(primer_univ_path)
 print_dashline()
 print("list_seq_genomic =", list_seq_genomic[0])
 print_dashline()
-print("bcd_RT =", bcd_RT_list[:2])
+print("bcd_RT =", bcd_rt_list[:2])
 print_dashline()
 print("primer_univ = ", "primer1 =", primer_univ_list["primer1"])
 print_dashline()
@@ -116,8 +116,8 @@ def check_locus_rt_bcd():
             compared to the total number of loci.
     """
     type_bcdrt = "barcodes" if bcd_rt_file == "Barcodes.csv" else "RTs"
-    if len(bcd_RT_list) < nbr_loci_total:
-        raise InvalidNbrLocusException(nbr_locus=nbr_loci_total, nbr_bcd_rt=len(bcd_RT_list),
+    if len(bcd_rt_list) < nbr_loci_total:
+        raise InvalidNbrLocusException(nbr_locus=nbr_loci_total, nbr_bcd_rt=len(bcd_rt_list),
                                        type_bcd_rt=type_bcdrt)
 
 
@@ -171,18 +171,18 @@ print(library.loci_list[0])
 count = 0
 for locus in library.loci_list:
     seq_with_bcd = []
-    bcd_RT_seq = bcd_RT_list[count][1]
-    locus.bcd_locus = bcd_RT_list[count][0]
+    bcd_rt_seq = bcd_rt_list[count][1]
+    locus.bcd_locus = bcd_rt_list[count][0]
 
     for genomic_seq in locus.seq_probe:
         if nbr_bcd_rt_by_probe == 2:
-            seq_with_bcd.append(f"{bcd_RT_seq} {genomic_seq} {bcd_RT_seq}")
+            seq_with_bcd.append(f"{bcd_rt_seq} {genomic_seq} {bcd_rt_seq}")
         elif nbr_bcd_rt_by_probe == 3:
-            seq_with_bcd.append(f"{bcd_RT_seq} {genomic_seq} {bcd_RT_seq * 2}")
+            seq_with_bcd.append(f"{bcd_rt_seq} {genomic_seq} {bcd_rt_seq * 2}")
         elif nbr_bcd_rt_by_probe == 4:
-            seq_with_bcd.append(f"{bcd_RT_seq * 2} {genomic_seq} {bcd_RT_seq * 2}")
+            seq_with_bcd.append(f"{bcd_rt_seq * 2} {genomic_seq} {bcd_rt_seq * 2}")
         elif nbr_bcd_rt_by_probe == 5:
-            seq_with_bcd.append(f"{bcd_RT_seq * 3} {genomic_seq} {bcd_RT_seq * 2}")
+            seq_with_bcd.append(f"{bcd_rt_seq * 3} {genomic_seq} {bcd_rt_seq * 2}")
     count += 1
     locus.seq_probe = seq_with_bcd
 
@@ -224,11 +224,11 @@ library.completion(diff_percentage, max_length)
 
 # Creation of a dated file to differentiate between the different libraries designed
 date_now = dt.datetime.now().strftime("%Y%m%d_%H%M")
-pathresult_folder = result_folder + os.sep + date_now
-os.mkdir(pathresult_folder)
+path_result_folder = result_folder + os.sep + date_now
+os.mkdir(path_result_folder)
 
 # writing the file with detailed information (information for each locus and sequence)
-result_details = pathresult_folder + os.sep + "1_Library_details.txt"
+result_details = path_result_folder + os.sep + "1_Library_details.txt"
 with open(result_details, mode="w", encoding="UTF-8") as file:
     for locus in library.loci_list:
         file.write(
@@ -239,14 +239,14 @@ with open(result_details, mode="w", encoding="UTF-8") as file:
             file.write(seq + "\n")
 
 # writing the file with all primary probe sequences for all locus (without spaces)
-full_sequence = pathresult_folder + os.sep + "2_Full_sequence_Only.txt"
+full_sequence = path_result_folder + os.sep + "2_Full_sequence_Only.txt"
 with open(full_sequence, mode="w", encoding="UTF-8") as file:
     for locus in library.loci_list:
         for seq in locus.seq_probe:
             file.write(seq.replace(" ", "") + "\n")
 
 # writing file with summary information (without sequence) in the form of a table
-summary = pathresult_folder + os.sep + "3_Library_summary.csv"
+summary = path_result_folder + os.sep + "3_Library_summary.csv"
 with open(summary, mode="w", encoding="UTF-8") as file:
     file.write("Chromosome,Locus_N°,Start,End,Region size, Barcode,PU.Fw,PU.Rev,Nbr_Probes\n")
     for locus in library.loci_list:
@@ -258,7 +258,7 @@ with open(summary, mode="w", encoding="UTF-8") as file:
 
 # Saving the parameters used to generate the library as a .json file
 
-parameters_file_path = pathresult_folder + os.sep + "4-OutputParameters.json"
+parameters_file_path = path_result_folder + os.sep + "4-OutputParameters.json"
 
 # Parameter recovery
 parameters = {}
@@ -281,4 +281,4 @@ parameters["design_type"] = design_type
 with open(parameters_file_path, mode="w", encoding="UTF-8") as file:
     json.dump(parameters, file, indent=4)
 
-print(f"All files concerning your library design are saved in {pathresult_folder}/")
+print(f"All files concerning your library design are saved in {path_result_folder}/")
