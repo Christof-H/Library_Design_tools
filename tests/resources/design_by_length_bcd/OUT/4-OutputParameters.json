@@ -1,14 +1,16 @@
 {
-    "Script_Name": "Classical_Library_Design.py",
-    "ChromosomeFile": "chr3L.bed",
-    "ChromosomeFolder": "/mnt/PALM_dataserv/DATA/Commun/genomes/dm6/OligoMiner/dm6_balanced/",
+    "Script_Name": "library_design.py",
+    "chromosome_file": "chr3L.bed",
+    "chromosome_folder": "/mnt/PALM_dataserv/DATA/Commun/genomes/dm6/OligoMiner/dm6_balanced/",
     "resolution": 10000,
-    "startLib": 8883000,
-    "endLib": 9383000,
-    "nbrLociTotal": 50,
-    "nbrProbeByLocus": 100,
-    "nbrBcd_RT_ByProbe": 3,
-    "PrimerU": "primer1",
+    "start_lib": 8883000,
+    "end_lib": 9383000,
+    "nbr_loci_total": 50,
+    "nbr_probe_by_locus": 100,
+    "nbr_bcd_rt_by_probe": 3,
+    "primer_univ": "primer1",
     "bcd_TR_File": "Barcodes.csv",
-    "primerUnivFile": "Primer_univ.csv"
+    "primer_Univ_File": "Primer_univ.csv",
+    "max_diff_percent": 10,
+    "design_type": "locus_length"
 }
