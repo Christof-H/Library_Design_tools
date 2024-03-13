@@ -38,6 +38,27 @@ from models.locus import Locus
 from models.invalidNbrLocusException import InvalidNbrLocusException
 
 # ---------------------------------------------------------------------------------------------
+#                                       Functions
+# ---------------------------------------------------------------------------------------------
+def print_dashline():
+    """print a dash line"""
+    print('-' * 70)
+
+
+def check_locus_rt_bcd():
+    """Check that there are enough barcodes or RTs for the total number of loci.
+
+    Raises:
+        InvalidNbrLocusException: If the number of available barcodes or RTs is insufficient
+            compared to the total number of loci.
+    """
+    type_bcdrt = "barcodes" if parameters['bcd_rt_file'] == "Barcodes.csv" else "RTs"
+    if len(bcd_rt_list) < parameters['nbr_loci_total']:
+        raise InvalidNbrLocusException(nbr_locus=parameters['nbr_loci_total'], nbr_bcd_rt=len(bcd_rt_list),
+                                       type_bcd_rt=type_bcdrt)
+
+
+# ---------------------------------------------------------------------------------------------
 #                               Importing library parameters
 # ---------------------------------------------------------------------------------------------
 src_folder = os.path.dirname(os.path.realpath(__file__))
@@ -52,11 +73,6 @@ parameters = data.load_parameters(json_path)
 parameters['resources_path'] = src_folder + os.sep + "resources"
 parameters['bcd_rt_path'] = parameters['resources_path'] + os.sep + parameters['bcd_rt_file']
 parameters['primer_univ_path'] = parameters['resources_path'] + os.sep + PRIMER_UNIV_FILE
-
-
-def print_dashline():
-    """print a dash line"""
-    print('-' * 70)
 
 
 # ---------------------------------------------------------------------------------------------
@@ -92,19 +108,6 @@ print_dashline()
 # ---------------------------------------------------------------------------------------------
 #       Check the number of loci against the number of RTs or barcodes available
 # ---------------------------------------------------------------------------------------------
-def check_locus_rt_bcd():
-    """Check that there are enough barcodes or RTs for the total number of loci.
-
-    Raises:
-        InvalidNbrLocusException: If the number of available barcodes or RTs is insufficient
-            compared to the total number of loci.
-    """
-    type_bcdrt = "barcodes" if parameters['bcd_rt_file'] == "Barcodes.csv" else "RTs"
-    if len(bcd_rt_list) < parameters['nbr_loci_total']:
-        raise InvalidNbrLocusException(nbr_locus=parameters['nbr_loci_total'], nbr_bcd_rt=len(bcd_rt_list),
-                                       type_bcd_rt=type_bcdrt)
-
-
 check_locus_rt_bcd()
 
 # ---------------------------------------------------------------------------------------------
