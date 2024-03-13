@@ -1,4 +1,6 @@
 import random
+import copy
+
 from src.models.locus import Locus
 
 
@@ -63,6 +65,46 @@ class Library:
                         self.nbr_loci_total * nbr_probe_by_locus):
                     list_seq_genomic_reduced.append(seq)
         return list_seq_genomic_reduced
+
+    def add_rt_bcd_to_primary_seq(self,
+                                  bcd_rt_list: list[list[str]],
+                                  parameters: dict[str, str | int]
+                                  ) -> None:
+        """Add the rt/bcd sequences on either side of the genomic sequence according to the locus and the
+        number of sites for oligo imaging..
+
+        Args:
+            bcd_rt_list (list[list[str]]):
+                list of rt/barcode (name, sequence)
+            parameters (dict[str, str | int]):
+                dictionary with parameters for library design
+        """
+        count = 0
+        for locus in self.loci_list:
+            seq_with_bcd = []
+            bcd_rt_seq = bcd_rt_list[count][1]
+            locus.bcd_locus = bcd_rt_list[count][0]
+
+            for genomic_seq in locus.seq_probe:
+                if parameters['nbr_bcd_rt_by_probe'] == 2:
+                    seq_with_bcd.append(f"{bcd_rt_seq} {genomic_seq} {bcd_rt_seq}")
+                elif parameters['nbr_bcd_rt_by_probe'] == 3:
+                    seq_with_bcd.append(f"{bcd_rt_seq} {genomic_seq} {bcd_rt_seq * 2}")
+                elif parameters['nbr_bcd_rt_by_probe'] == 4:
+                    seq_with_bcd.append(f"{bcd_rt_seq * 2} {genomic_seq} {bcd_rt_seq * 2}")
+                elif parameters['nbr_bcd_rt_by_probe'] == 5:
+                    seq_with_bcd.append(f"{bcd_rt_seq * 3} {genomic_seq} {bcd_rt_seq * 2}")
+            count += 1
+            locus.seq_probe = seq_with_bcd
+
+    def add_univ_primer_each_side(self) -> None:
+        """Add the forward and reverse primer sequences on either side of all primary probe loci sequences .
+        """
+        for locus in self.loci_list:
+            p_fw = copy.deepcopy(locus.primers_univ[1])
+            p_rev = copy.deepcopy(locus.primers_univ[3])
+            temp = [f"{p_fw} {x} {p_rev}" for x in locus.seq_probe]
+            locus.seq_probe = temp
 
     def check_length_seq_diff(self) -> tuple[int, int, int, int]:
         """Evaluation of the length (min, max) of the primary probes of the entire library and
