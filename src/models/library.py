@@ -7,12 +7,12 @@ from src.models.locus import Locus
 class Library:
 
     def __init__(
-            self,
-            chromosome_name: str,
-            start_lib: int,
-            nbr_loci_total: int,
-            max_diff_percent: int,
-            design_type: str
+        self,
+        chromosome_name: str,
+        start_lib: int,
+        nbr_loci_total: int,
+        max_diff_percent: int,
+        design_type: str,
     ) -> None:
         self.chromosome_name = chromosome_name
         self.start_lib = start_lib
@@ -32,12 +32,13 @@ class Library:
             self.loci_list = []
         self.loci_list.append(locus)
 
-    def reduce_list_seq(self,
-                        seq_list: list[list[int, int, str]],
-                        resolution: int,
-                        nbr_probe_by_locus: int
-                        ) -> list[list[int, int, str]]:
-        """Reduces the list of genomic sequences to library coordinates only to avoid 
+    def reduce_list_seq(
+        self,
+        seq_list: list[list[int, int, str]],
+        resolution: int,
+        nbr_probe_by_locus: int,
+    ) -> list[list[int, int, str]]:
+        """Reduces the list of genomic sequences to library coordinates only to avoid
         iterating over all the genomic sequences of the chosen chromosome each time.
 
         Args:
@@ -50,26 +51,27 @@ class Library:
                 number of probes in a Locus
 
         Returns:
-            (list[list[str]): 
+            (list[list[str]):
                 A list of sequence reduced: [[80000, 80020, 'CGATCGTGATGCTAGCATGT'], ...]
         """
         list_seq_genomic_reduced = []
         if self.design_type == "locus_length":
             for seq in seq_list:
                 if int(seq[0]) >= self.start_lib and int(seq[1]) <= (
-                        self.start_lib + (self.nbr_loci_total * resolution)):
+                    self.start_lib + (self.nbr_loci_total * resolution)
+                ):
                     list_seq_genomic_reduced.append(seq)
         elif self.design_type == "nbr_probes":
             for seq in seq_list:
                 if self.start_lib <= int(seq[0]) and len(list_seq_genomic_reduced) < (
-                        self.nbr_loci_total * nbr_probe_by_locus):
+                    self.nbr_loci_total * nbr_probe_by_locus
+                ):
                     list_seq_genomic_reduced.append(seq)
         return list_seq_genomic_reduced
 
-    def add_rt_bcd_to_primary_seq(self,
-                                  bcd_rt_list: list[list[str]],
-                                  parameters: dict[str, str | int]
-                                  ) -> None:
+    def add_rt_bcd_to_primary_seq(
+        self, bcd_rt_list: list[list[str]], parameters: dict[str, str | int]
+    ) -> None:
         """Add the rt/bcd sequences on either side of the genomic sequence according to the locus and the
         number of sites for oligo imaging..
 
@@ -86,20 +88,23 @@ class Library:
             locus.bcd_locus = bcd_rt_list[count][0]
 
             for genomic_seq in locus.seq_probe:
-                if parameters['nbr_bcd_rt_by_probe'] == 2:
+                if parameters["nbr_bcd_rt_by_probe"] == 2:
                     seq_with_bcd.append(f"{bcd_rt_seq} {genomic_seq} {bcd_rt_seq}")
-                elif parameters['nbr_bcd_rt_by_probe'] == 3:
+                elif parameters["nbr_bcd_rt_by_probe"] == 3:
                     seq_with_bcd.append(f"{bcd_rt_seq} {genomic_seq} {bcd_rt_seq * 2}")
-                elif parameters['nbr_bcd_rt_by_probe'] == 4:
-                    seq_with_bcd.append(f"{bcd_rt_seq * 2} {genomic_seq} {bcd_rt_seq * 2}")
-                elif parameters['nbr_bcd_rt_by_probe'] == 5:
-                    seq_with_bcd.append(f"{bcd_rt_seq * 3} {genomic_seq} {bcd_rt_seq * 2}")
+                elif parameters["nbr_bcd_rt_by_probe"] == 4:
+                    seq_with_bcd.append(
+                        f"{bcd_rt_seq * 2} {genomic_seq} {bcd_rt_seq * 2}"
+                    )
+                elif parameters["nbr_bcd_rt_by_probe"] == 5:
+                    seq_with_bcd.append(
+                        f"{bcd_rt_seq * 3} {genomic_seq} {bcd_rt_seq * 2}"
+                    )
             count += 1
             locus.seq_probe = seq_with_bcd
 
     def add_univ_primer_each_side(self) -> None:
-        """Add the forward and reverse primer sequences on either side of all primary probe loci sequences .
-        """
+        """Add the forward and reverse primer sequences on either side of all primary probe loci sequences ."""
         for locus in self.loci_list:
             p_fw = copy.deepcopy(locus.primers_univ[1])
             p_rev = copy.deepcopy(locus.primers_univ[3])
@@ -132,9 +137,7 @@ class Library:
         difference_nbr = maximal_length - minimal_length
         return minimal_length, maximal_length, difference_nbr, difference_percentage
 
-    def completion(
-            self, difference_percentage: int, max_length: int
-    ) -> None:
+    def completion(self, difference_percentage: int, max_length: int) -> None:
         """Random nucleotide completion function for sequences with too large a size difference (default=10%)
 
         Args:
