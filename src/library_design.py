@@ -46,8 +46,8 @@ script_folder = os.path.abspath(os.path.join(src_folder, ".."))
 PRIMER_UNIV_FILE = "Primer_univ.csv"
 JSON_FILE = "input_parameters.json"
 
+# Retrieving parameters from the input_parameters.json file
 json_path = src_folder + os.sep + JSON_FILE
-
 parameters = data.load_parameters(json_path)
 parameters['resources_path'] = src_folder + os.sep + "resources"
 parameters['bcd_rt_path'] = parameters['resources_path'] + os.sep + parameters['bcd_rt_file']
@@ -116,6 +116,7 @@ check_locus_rt_bcd()
 primer = [primer_univ_list[key] for key, values in primer_univ_list.items() if key == parameters['primer_univ']]
 primer = primer[0]
 
+# Create and fill Library object with the different parameters
 library = Library(
     chromosome_name=parameters['chromosome_file'].split(".")[0],
     start_lib=parameters['start_lib'],
@@ -124,11 +125,13 @@ library = Library(
     design_type=parameters['design_type']
 )
 
+
+# Reduce genomic sequence according to loci coordinates or probe number
 list_seq_genomic_reduced = library.reduce_list_seq(list_seq_genomic,
                                                    resolution=parameters['resolution'],
                                                    nbr_probe_by_locus=parameters['nbr_probe_by_locus'])
 
-# Filling the Library class with all the Locus
+# Fill the Library object with all the Locus
 for i in range(1, library.nbr_loci_total + 1):
     locus = Locus(primers_univ=primer, locus_n=i,
                   chr_name=library.chromosome_name,
@@ -152,32 +155,11 @@ print("Locus exemple :")
 print(library.loci_list[0])
 
 # Sequences for barcodes/RTs added to primary probes according to locus
-count = 0
-for locus in library.loci_list:
-    seq_with_bcd = []
-    bcd_rt_seq = bcd_rt_list[count][1]
-    locus.bcd_locus = bcd_rt_list[count][0]
-
-    for genomic_seq in locus.seq_probe:
-        if parameters['nbr_bcd_rt_by_probe'] == 2:
-            seq_with_bcd.append(f"{bcd_rt_seq} {genomic_seq} {bcd_rt_seq}")
-        elif parameters['nbr_bcd_rt_by_probe'] == 3:
-            seq_with_bcd.append(f"{bcd_rt_seq} {genomic_seq} {bcd_rt_seq * 2}")
-        elif parameters['nbr_bcd_rt_by_probe'] == 4:
-            seq_with_bcd.append(f"{bcd_rt_seq * 2} {genomic_seq} {bcd_rt_seq * 2}")
-        elif parameters['nbr_bcd_rt_by_probe'] == 5:
-            seq_with_bcd.append(f"{bcd_rt_seq * 3} {genomic_seq} {bcd_rt_seq * 2}")
-    count += 1
-    locus.seq_probe = seq_with_bcd
+library.add_rt_bcd_to_primary_seq(bcd_rt_list, parameters)
 
 # Sequences for universal primers added to the primary probes at each end
+library.add_univ_primer_each_side()
 
-for locus in library.loci_list:
-    p_fw = copy.deepcopy(locus.primers_univ[1])
-    p_rev = copy.deepcopy(locus.primers_univ[3])
-    temp = list()
-    temp = [f"{p_fw} {x} {p_rev}" for x in locus.seq_probe]
-    locus.seq_probe = temp
 
 # Display example of a final primary probe sequence
 print_dashline()
