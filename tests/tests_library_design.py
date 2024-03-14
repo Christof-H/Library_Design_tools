@@ -5,7 +5,7 @@ import json
 import re
 import datetime as dt
 
-import src.modules.data_import_function as data
+import src.modules.data_function as data
 from src.models.library import Library
 from src.models.locus import Locus
 

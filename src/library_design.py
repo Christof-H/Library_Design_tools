@@ -32,7 +32,7 @@ import copy
 import json
 
 import datetime as dt
-import modules.data_function as data
+import modules.data_function as df
 from models.library import Library
 from models.locus import Locus
 from models.invalidNbrLocusException import InvalidNbrLocusException
@@ -73,7 +73,7 @@ JSON_FILE = "input_parameters.json"
 
 # Retrieving parameters from the input_parameters.json file
 json_path = src_folder + os.sep + JSON_FILE
-parameters = data.load_parameters(json_path)
+parameters = df.load_parameters(json_path)
 parameters["resources_path"] = src_folder + os.sep + "resources"
 parameters["bcd_rt_path"] = (
     parameters["resources_path"] + os.sep + parameters["bcd_rt_file"]
@@ -96,13 +96,13 @@ if not os.path.exists(result_folder):
 # ---------------------------------------------------------------------------------------------
 
 # Opening and formatting barcodes or RTs in the bcd_RT variable:
-bcd_rt_list = data.bcd_rt_format(parameters["bcd_rt_path"])
+bcd_rt_list = df.bcd_rt_format(parameters["bcd_rt_path"])
 
 # Opening and formatting the coordinates and genomic sequences of in the list_seq_genomic variable :
-list_seq_genomic = data.seq_genomic_format(parameters["genomic_path"])
+list_seq_genomic = df.seq_genomic_format(parameters["genomic_path"])
 
 # Opening and formatting universal primers in the primer_univ variable : :
-primer_univ_list = data.universal_primer_format(parameters["primer_univ_path"])
+primer_univ_list = df.universal_primer_format(parameters["primer_univ_path"])
 
 print_dashline()
 print("list_seq_genomic =", list_seq_genomic[0])
@@ -215,13 +215,13 @@ path_result_folder = result_folder + os.sep + date_now
 os.mkdir(path_result_folder)
 
 # writing the file with detailed information (information for each locus and sequence)
-data.result_details_file(path_result_folder, library)
+df.result_details_file(path_result_folder, library)
 
 # writing the file with all primary probe sequences for all locus (without spaces)
-data.full_sequences_file(path_result_folder, library)
+df.full_sequences_file(path_result_folder, library)
 
 # writing file with summary information (without sequence) in the form of a table
-data.library_summary_file(path_result_folder, library)
+df.library_summary_file(path_result_folder, library)
 
 
 # Retrieve the parameters used to design the library
@@ -231,4 +231,4 @@ output_parameters["primer_Univ_File"] = PRIMER_UNIV_FILE
 
 
 # Write library parameters in the 4-OutputParameters.json file
-data.save_parameters(path_result_folder, output_parameters)
+df.save_parameters(path_result_folder, output_parameters)
