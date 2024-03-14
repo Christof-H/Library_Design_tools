@@ -5,7 +5,7 @@ import json
 import re
 import datetime as dt
 
-import src.modules.data_function as data
+import src.modules.data_function as df
 from src.models.library import Library
 from src.models.locus import Locus
 
@@ -14,16 +14,18 @@ from src.models.locus import Locus
 def setup(tmp_path_factory):
     test_folder = os.path.dirname(os.path.realpath(__file__))
     script_folder = os.path.abspath(os.path.join(test_folder, ".."))
-    dic = {}
+
+    dic = {"test_folder": test_folder, "script_folder": script_folder}
     primer_univ_file = "Primer_univ.csv"
     input_param_folder = [
-        "./resources/design_by_length_bcd/IN/input_parameters.json",
-        "./resources/design_by_length_rt/IN/input_parameters.json",
-        "./resources/design_by_probe_nbr_bcd/IN/input_parameters.json",
-        "./resources/design_by_probe_nbr_rt/IN/input_parameters.json",
+        "resources/design_by_length_bcd/IN/input_parameters.json",
+        "resources/design_by_length_rt/IN/input_parameters.json",
+        "resources/design_by_probe_nbr_bcd/IN/input_parameters.json",
+        "resources/design_by_probe_nbr_rt/IN/input_parameters.json",
     ]
     for json_path in input_param_folder:
-        with open(json_path, mode="r", encoding="UTF-8") as file:
+        full_path = test_folder + os.sep + json_path
+        with open(full_path, mode="r", encoding="UTF-8") as file:
             input_parameters = json.load(file)
 
         input_parameters["end_lib"] = input_parameters["start_lib"] + (
@@ -41,9 +43,9 @@ def setup(tmp_path_factory):
 
         result_folder = tmp_path_factory.mktemp("Library_Design_Results")
 
-        bcd_rt_list = data.bcd_rt_format(bcd_rt_path)
-        list_seq_genomic = data.seq_genomic_format(genomic_path)
-        primer_univ_list = data.universal_primer_format(primer_univ_path)
+        bcd_rt_list = df.bcd_rt_format(bcd_rt_path)
+        list_seq_genomic = df.seq_genomic_format(genomic_path)
+        primer_univ_list = df.universal_primer_format(primer_univ_path)
 
         primer = [
             primer_univ_list[key]
@@ -133,7 +135,7 @@ def setup(tmp_path_factory):
 def test_summary_locus_length_with_bcd(setup):
     path_result_folder = setup["lib_by_length_bcd_path"]
     library = setup["lib_by_length_bcd"]
-    path_output = "resources/design_by_length_bcd/OUT"
+    path_output = setup["test_folder"] + os.sep + "resources/design_by_length_bcd/OUT"
     summary_test = path_result_folder / "3_Library_summary.csv"
     summary_output_reference = path_output + os.sep + "3_Library_summary.csv"
 
@@ -158,7 +160,7 @@ def test_summary_locus_length_with_bcd(setup):
 def test_summary_locus_length_with_rt(setup):
     path_result_folder = setup["lib_by_length_rt_path"]
     library = setup["lib_by_length_rt"]
-    path_output = "resources/design_by_length_rt/OUT"
+    path_output = setup["test_folder"] + os.sep + "resources/design_by_length_rt/OUT"
     summary_test = path_result_folder / "3_Library_summary.csv"
     summary_output_reference = path_output + os.sep + "3_Library_summary.csv"
 
@@ -183,7 +185,9 @@ def test_summary_locus_length_with_rt(setup):
 def test_summary_locus_nbr_probe_with_bcd(setup):
     path_result_folder = setup["lib_by_probe_nbr_bcd_path"]
     library = setup["lib_by_probe_nbr_bcd"]
-    path_output = "resources/design_by_probe_nbr_bcd/OUT"
+    path_output = (
+        setup["test_folder"] + os.sep + "resources/design_by_probe_nbr_bcd/OUT"
+    )
     summary_test = path_result_folder / "3_Library_summary.csv"
     summary_output_reference = path_output + os.sep + "3_Library_summary.csv"
 
@@ -208,7 +212,7 @@ def test_summary_locus_nbr_probe_with_bcd(setup):
 def test_summary_locus_nbr_probe_with_rt(setup):
     path_result_folder = setup["lib_by_probe_nbr_rt_path"]
     library = setup["lib_by_probe_nbr_rt"]
-    path_output = "resources/design_by_probe_nbr_rt/OUT"
+    path_output = setup["test_folder"] + os.sep + "resources/design_by_probe_nbr_rt/OUT"
     summary_test = path_result_folder / "3_Library_summary.csv"
     summary_output_reference = path_output + os.sep + "3_Library_summary.csv"
 

@@ -1,14 +1,17 @@
 import pytest
+import os
 
 import src.modules.data_function as df
 
 
 @pytest.fixture
 def file_path():
+    test_folder = os.path.dirname(os.path.realpath(__file__))
+    script_folder = os.path.abspath(os.path.join(test_folder, ".."))
     dic_path = {}
-    dic_path["rt_file_path"] = "../src/resources/List_RT.csv"
-    dic_path["bcd_file_path"] = "../src/resources/Barcodes.csv"
-    dic_path["univ_primer"] = "../src/resources/Primer_univ.csv"
+    dic_path["rt_file_path"] = script_folder + os.sep + "src/resources/List_RT.csv"
+    dic_path["bcd_file_path"] = script_folder + os.sep + "src/resources/Barcodes.csv"
+    dic_path["univ_primer"] = script_folder + os.sep + "src/resources/Primer_univ.csv"
     dic_path["exemple_genomic_seq"] = (
         "/mnt/PALM_dataserv/DATA/Commun/genomes/dm6/OligoMiner/dm6_balanced/chr3L.bed"
     )
