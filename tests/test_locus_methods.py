@@ -1,3 +1,5 @@
+import os
+
 import pytest
 import random
 
@@ -42,6 +44,7 @@ def test_recover_genomic_seq_nbr_probes_strategy(locus):
 
 
 def test_check_nbr_probes_overtaking(locus):
+    print(os.getcwd())
     locus, seq_list = locus
     seq_list = seq_list[:400]
     assert len(locus.check_nbr_probes(seq_list)) == locus.nbr_probe_by_locus
