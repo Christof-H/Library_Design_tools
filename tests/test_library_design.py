@@ -15,8 +15,13 @@ def setup(tmp_path_factory):
     test_folder = os.path.dirname(os.path.realpath(__file__))
     script_folder = os.path.abspath(os.path.join(test_folder, ".."))
 
-    dic = {"test_folder": test_folder, "script_folder": script_folder}
     primer_univ_file = "Primer_univ.csv"
+    resources_path = script_folder + os.sep + "src" + os.sep + "resources"
+    primer_univ_path = resources_path + os.sep + primer_univ_file
+    result_folder = tmp_path_factory.mktemp("Library_Design_Results")
+
+    dic = {"test_folder": test_folder, "script_folder": script_folder}
+
     input_param_folder = [
         "resources/design_by_length_bcd/IN/input_parameters.json",
         "resources/design_by_length_rt/IN/input_parameters.json",
@@ -25,23 +30,18 @@ def setup(tmp_path_factory):
     ]
     for json_path in input_param_folder:
         full_path = test_folder + os.sep + json_path
-        with open(full_path, mode="r", encoding="UTF-8") as file:
-            input_parameters = json.load(file)
+        input_parameters = df.load_parameters(full_path)
 
         input_parameters["end_lib"] = input_parameters["start_lib"] + (
             input_parameters["nbr_loci_total"] * input_parameters["resolution"]
         )
 
-        resources_path = script_folder + os.sep + "src" + os.sep + "resources"
         bcd_rt_path = resources_path + os.sep + input_parameters["bcd_rt_file"]
         genomic_path = (
             input_parameters["chromosome_folder"]
             + os.sep
             + input_parameters["chromosome_file"]
         )
-        primer_univ_path = resources_path + os.sep + primer_univ_file
-
-        result_folder = tmp_path_factory.mktemp("Library_Design_Results")
 
         bcd_rt_list = df.bcd_rt_format(bcd_rt_path)
         list_seq_genomic = df.seq_genomic_format(genomic_path)
@@ -80,41 +80,16 @@ def setup(tmp_path_factory):
             )
             locus.start_seq = start
             locus.end_seq = end
-            # locus.primers_univ=primer,
             locus.seq_probe = list_seq
             library.add_locus(locus)
 
         # Sequences for barcodes/RTs added to primary probes according to locus
-        count = 0
-        for locus in library.loci_list:
-            seq_with_bcd = []
-            bcd_rt_seq = bcd_rt_list[count][1]
-            locus.bcd_locus = bcd_rt_list[count][0]
-
-            for genomic_seq in locus.seq_probe:
-                if input_parameters["nbr_bcd_rt_by_probe"] == 2:
-                    seq_with_bcd.append(f"{bcd_rt_seq} {genomic_seq} {bcd_rt_seq}")
-                elif input_parameters["nbr_bcd_rt_by_probe"] == 3:
-                    seq_with_bcd.append(f"{bcd_rt_seq} {genomic_seq} {bcd_rt_seq * 2}")
-                elif input_parameters["nbr_bcd_rt_by_probe"] == 4:
-                    seq_with_bcd.append(
-                        f"{bcd_rt_seq * 2} {genomic_seq} {bcd_rt_seq * 2}"
-                    )
-                elif input_parameters["nbr_bcd_rt_by_probe"] == 5:
-                    seq_with_bcd.append(
-                        f"{bcd_rt_seq * 3} {genomic_seq} {bcd_rt_seq * 2}"
-                    )
-            count += 1
-            locus.seq_probe = seq_with_bcd
+        library.add_rt_bcd_to_primary_seq(bcd_rt_list, input_parameters)
 
         # Sequences for universal primers added to the primary probes at each end
+        library.add_univ_primer_each_side()
 
-        for locus in library.loci_list:
-            p_fw = copy.deepcopy(locus.primers_univ[1])
-            p_rev = copy.deepcopy(locus.primers_univ[3])
-            temp = [f"{p_fw} {x} {p_rev}" for x in locus.seq_probe]
-            locus.seq_probe = temp
-
+        # Checking primary probes length for all Locus
         min_length, max_length, diff_nbr, diff_percentage = (
             library.check_length_seq_diff()
         )
@@ -139,17 +114,9 @@ def test_summary_locus_length_with_bcd(setup):
     summary_test = path_result_folder / "3_Library_summary.csv"
     summary_output_reference = path_output + os.sep + "3_Library_summary.csv"
 
-    with open(summary_test, mode="w", encoding="UTF-8") as file:
-        file.write(
-            "Chromosome,Locus_N°,Start,End,Region size, Barcode,PU.Fw,PU.Rev,Nbr_Probes\n"
-        )
-        for locus in library.loci_list:
-            file.write(
-                f"{locus.chr_name},{locus.locus_n},{locus.start_seq},\
-{locus.end_seq},{locus.end_seq - locus.start_seq},{locus.bcd_locus},{locus.primers_univ[0]},\
-{locus.primers_univ[2]},{len(locus.seq_probe)}\n"
-            )
+    df.library_summary_file(path_result_folder, library)
 
+    # Opening and comparing the initial results files with the new files generated for the test
     with open(summary_output_reference, mode="r", encoding="UTF-8") as reference_file:
         reference_text = reference_file.read()
         with open(summary_test, mode="r", encoding="UTF-8") as test_file:
@@ -164,17 +131,9 @@ def test_summary_locus_length_with_rt(setup):
     summary_test = path_result_folder / "3_Library_summary.csv"
     summary_output_reference = path_output + os.sep + "3_Library_summary.csv"
 
-    with open(summary_test, mode="w", encoding="UTF-8") as file:
-        file.write(
-            "Chromosome,Locus_N°,Start,End,Region size, Barcode,PU.Fw,PU.Rev,Nbr_Probes\n"
-        )
-        for locus in library.loci_list:
-            file.write(
-                f"{locus.chr_name},{locus.locus_n},{locus.start_seq},\
-{locus.end_seq},{locus.end_seq - locus.start_seq},{locus.bcd_locus},{locus.primers_univ[0]},\
-{locus.primers_univ[2]},{len(locus.seq_probe)}\n"
-            )
+    df.library_summary_file(path_result_folder, library)
 
+    # Opening and comparing the initial results files with the new files generated for the test
     with open(summary_output_reference, mode="r", encoding="UTF-8") as reference_file:
         reference_text = reference_file.read()
         with open(summary_test, mode="r", encoding="UTF-8") as test_file:
@@ -191,17 +150,9 @@ def test_summary_locus_nbr_probe_with_bcd(setup):
     summary_test = path_result_folder / "3_Library_summary.csv"
     summary_output_reference = path_output + os.sep + "3_Library_summary.csv"
 
-    with open(summary_test, mode="w", encoding="UTF-8") as file:
-        file.write(
-            "Chromosome,Locus_N°,Start,End,Region size, Barcode,PU.Fw,PU.Rev,Nbr_Probes\n"
-        )
-        for locus in library.loci_list:
-            file.write(
-                f"{locus.chr_name},{locus.locus_n},{locus.start_seq},\
-{locus.end_seq},{locus.end_seq - locus.start_seq},{locus.bcd_locus},{locus.primers_univ[0]},\
-{locus.primers_univ[2]},{len(locus.seq_probe)}\n"
-            )
+    df.library_summary_file(path_result_folder, library)
 
+    # Opening and comparing the initial results files with the new files generated for the test
     with open(summary_output_reference, mode="r", encoding="UTF-8") as reference_file:
         reference_text = reference_file.read()
         with open(summary_test, mode="r", encoding="UTF-8") as test_file:
@@ -216,17 +167,9 @@ def test_summary_locus_nbr_probe_with_rt(setup):
     summary_test = path_result_folder / "3_Library_summary.csv"
     summary_output_reference = path_output + os.sep + "3_Library_summary.csv"
 
-    with open(summary_test, mode="w", encoding="UTF-8") as file:
-        file.write(
-            "Chromosome,Locus_N°,Start,End,Region size, Barcode,PU.Fw,PU.Rev,Nbr_Probes\n"
-        )
-        for locus in library.loci_list:
-            file.write(
-                f"{locus.chr_name},{locus.locus_n},{locus.start_seq},\
-{locus.end_seq},{locus.end_seq - locus.start_seq},{locus.bcd_locus},{locus.primers_univ[0]},\
-{locus.primers_univ[2]},{len(locus.seq_probe)}\n"
-            )
+    df.library_summary_file(path_result_folder, library)
 
+    # Opening and comparing the initial results files with the new files generated for the test
     with open(summary_output_reference, mode="r", encoding="UTF-8") as reference_file:
         reference_text = reference_file.read()
         with open(summary_test, mode="r", encoding="UTF-8") as test_file:
