@@ -132,13 +132,7 @@ primer = [
 primer = primer[0]
 
 # Create and fill Library object with the different parameters
-library = Library(
-    chromosome_name=parameters["chromosome_file"].split(".")[0],
-    start_lib=parameters["start_lib"],
-    nbr_loci_total=parameters["nbr_loci_total"],
-    max_diff_percent=parameters["max_diff_percent"],
-    design_type=parameters["design_type"],
-)
+library = Library(parameters)
 
 
 # Reduce genomic sequence according to loci coordinates or probe number

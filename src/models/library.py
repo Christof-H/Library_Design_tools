@@ -6,19 +6,12 @@ from src.models.locus import Locus
 
 class Library:
 
-    def __init__(
-        self,
-        chromosome_name: str,
-        start_lib: int,
-        nbr_loci_total: int,
-        max_diff_percent: int,
-        design_type: str,
-    ) -> None:
-        self.chromosome_name = chromosome_name
-        self.start_lib = start_lib
-        self.nbr_loci_total = nbr_loci_total
-        self.max_diff_percent = max_diff_percent
-        self.design_type = design_type
+    def __init__(self, parameters: dict[str, str | int]) -> None:
+        self.chromosome_name = parameters["chromosome_file"].split(".")[0]
+        self.start_lib = parameters["start_lib"]
+        self.nbr_loci_total = parameters["nbr_loci_total"]
+        self.max_diff_percent = parameters["max_diff_percent"]
+        self.design_type = parameters["design_type"]
         self.loci_list = None
 
     def add_locus(self, locus: Locus):
@@ -34,7 +27,7 @@ class Library:
 
     def reduce_list_seq(
         self,
-        seq_list: list[list[int, int, str]],
+        seq_list: list[int, int, str],
         resolution: int,
         nbr_probe_by_locus: int,
     ) -> list[list[int, int, str]]:

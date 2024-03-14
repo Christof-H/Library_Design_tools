@@ -26,22 +26,17 @@ def setup(tmp_path_factory):
         with open(json_path, mode="r", encoding="UTF-8") as file:
             input_parameters = json.load(file)
 
-        chromosome_file = input_parameters["chromosome_file"]
-        chromosome_folder = input_parameters["chromosome_folder"]
-        resolution = input_parameters["resolution"]
-        start_lib = input_parameters["start_lib"]
-        nbr_loci_total = input_parameters["nbr_loci_total"]
-        nbr_probe_by_locus = input_parameters["nbr_probe_by_locus"]
-        nbr_bcd_rt_by_probe = input_parameters["nbr_bcd_rt_by_probe"]
-        primer_univ = input_parameters["primer_univ"]
-        bcd_rt_file = input_parameters["bcd_rt_file"]
-        max_diff_percent = input_parameters["max_diff_percent"]
-        design_type = input_parameters["design_type"]
-        end_lib = start_lib + (nbr_loci_total * resolution)
+        input_parameters["end_lib"] = input_parameters["start_lib"] + (
+            input_parameters["nbr_loci_total"] * input_parameters["resolution"]
+        )
 
         resources_path = script_folder + os.sep + "src" + os.sep + "resources"
-        bcd_rt_path = resources_path + os.sep + bcd_rt_file
-        genomic_path = chromosome_folder + os.sep + chromosome_file
+        bcd_rt_path = resources_path + os.sep + input_parameters["bcd_rt_file"]
+        genomic_path = (
+            input_parameters["chromosome_folder"]
+            + os.sep
+            + input_parameters["chromosome_file"]
+        )
         primer_univ_path = resources_path + os.sep + primer_univ_file
 
         result_folder = tmp_path_factory.mktemp("Library_Design_Results")
@@ -53,22 +48,16 @@ def setup(tmp_path_factory):
         primer = [
             primer_univ_list[key]
             for key, values in primer_univ_list.items()
-            if key == primer_univ
+            if key == input_parameters["primer_univ"]
         ]
         primer = primer[0]
 
-        library = Library(
-            chromosome_name=chromosome_file.split(".")[0],
-            start_lib=start_lib,
-            nbr_loci_total=nbr_loci_total,
-            max_diff_percent=max_diff_percent,
-            design_type=design_type,
-        )
+        library = Library(input_parameters)
 
         list_seq_genomic_reduced = library.reduce_list_seq(
             list_seq_genomic,
-            resolution=resolution,
-            nbr_probe_by_locus=nbr_probe_by_locus,
+            resolution=input_parameters["resolution"],
+            nbr_probe_by_locus=input_parameters["nbr_probe_by_locus"],
         )
 
         # Filling the Library class with all the Locus
@@ -77,12 +66,15 @@ def setup(tmp_path_factory):
                 primers_univ=primer,
                 locus_n=i,
                 chr_name=library.chromosome_name,
-                resolution=resolution,
-                nbr_probe_by_locus=nbr_probe_by_locus,
-                design_type=design_type,
+                resolution=input_parameters["resolution"],
+                nbr_probe_by_locus=input_parameters["nbr_probe_by_locus"],
+                design_type=input_parameters["design_type"],
             )
             list_seq, start, end = locus.recover_genomic_seq(
-                i, nbr_loci_total, start_lib, list_seq_genomic_reduced
+                i,
+                input_parameters["nbr_loci_total"],
+                input_parameters["start_lib"],
+                list_seq_genomic_reduced,
             )
             locus.start_seq = start
             locus.end_seq = end
@@ -98,15 +90,15 @@ def setup(tmp_path_factory):
             locus.bcd_locus = bcd_rt_list[count][0]
 
             for genomic_seq in locus.seq_probe:
-                if nbr_bcd_rt_by_probe == 2:
+                if input_parameters["nbr_bcd_rt_by_probe"] == 2:
                     seq_with_bcd.append(f"{bcd_rt_seq} {genomic_seq} {bcd_rt_seq}")
-                elif nbr_bcd_rt_by_probe == 3:
+                elif input_parameters["nbr_bcd_rt_by_probe"] == 3:
                     seq_with_bcd.append(f"{bcd_rt_seq} {genomic_seq} {bcd_rt_seq * 2}")
-                elif nbr_bcd_rt_by_probe == 4:
+                elif input_parameters["nbr_bcd_rt_by_probe"] == 4:
                     seq_with_bcd.append(
                         f"{bcd_rt_seq * 2} {genomic_seq} {bcd_rt_seq * 2}"
                     )
-                elif nbr_bcd_rt_by_probe == 5:
+                elif input_parameters["nbr_bcd_rt_by_probe"] == 5:
                     seq_with_bcd.append(
                         f"{bcd_rt_seq * 3} {genomic_seq} {bcd_rt_seq * 2}"
                     )

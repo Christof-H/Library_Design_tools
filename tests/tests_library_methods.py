@@ -7,14 +7,16 @@ from src.models.locus import Locus
 
 @pytest.fixture
 def setup():
-    # SetUp simply library without locus, seq_probe
-    library_empty = Library(
-        chromosome_name="ch3L",
-        start_lib=8500,
-        nbr_loci_total=5,
-        max_diff_percent=10,
-        design_type="locus_length",
-    )
+    # Set parameters for Library instantiation
+    parameters = {
+        "chromosome_file": "ch3L.bed",
+        "start_lib": 8500,
+        "nbr_loci_total": 5,
+        "max_diff_percent": 10,
+        "design_type": "locus_length",
+    }
+    # Set simply library without locus, seq_probe
+    library_empty = Library(parameters)
 
     # design sequence randomly with coordinates
     start_seq = list(range(8000, 80000, 50))
@@ -27,14 +29,9 @@ def setup():
     for start, end, seq in zip(start_seq, end_seq, seq):
         seq_list.append([start, end, seq])
 
-    # SetUp library with locus and seq_probe
-    library_with_loci = Library(
-        chromosome_name="ch3L",
-        start_lib=8500,
-        nbr_loci_total=5,
-        max_diff_percent=10,
-        design_type="locus_length",
-    )
+    # Set library with locus and seq_probe
+    library_with_loci = Library(parameters)
+
     seq1 = [8733, 8763, "GATAGATAGCATCATCATCTACTATCATCTATCAT"]
     locus1 = Locus(
         ["BB297.Fw", "GACTGGTACTCGCGTGACTTG", "BB299.Rev", "CCAGTCCAGAGGTGTCCCTAC"]
