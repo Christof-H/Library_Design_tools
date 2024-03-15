@@ -65,6 +65,7 @@ def check_locus_rt_bcd():
 # ---------------------------------------------------------------------------------------------
 #                               Importing library parameters
 # ---------------------------------------------------------------------------------------------
+print(os.getcwd())
 src_folder = os.path.dirname(os.path.realpath(__file__))
 script_folder = os.path.abspath(os.path.join(src_folder, ".."))
 

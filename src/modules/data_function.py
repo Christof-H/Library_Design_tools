@@ -2,7 +2,7 @@ import json
 import os
 from pathlib import Path
 
-from src.models.library import Library
+from models.library import Library
 
 
 def load_parameters(json_path: str) -> dict[str, str | int]:
