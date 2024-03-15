@@ -49,7 +49,7 @@ def bcd_rt_format(path: str) -> list[list[str]]:
         path (str): File path of Barcodes or RT
 
     Returns:
-        list[list[str]]: [[name, sequence], ...]
+        list[list[str]]: a list of barcode or RT [[name, sequence], ...]
     """
 
     bcd_rt_list = []

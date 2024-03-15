@@ -46,8 +46,13 @@ def print_dashline():
     print("-" * 70)
 
 
-def check_locus_rt_bcd():
+def check_locus_rt_bcd(parameters: dict[str, str | int], bcd_rt_list: list[list[str]]) -> None:
     """Check that there are enough barcodes or RTs for the total number of loci.
+    Args:
+        parameters (dict[str, str | int]):
+            parameters in a dictionary
+        bcd_rt_list (list[list[str]]):
+            a list of barcodes or RT in format [name, sequence]
 
     Raises:
         InvalidNbrLocusException: If the number of available barcodes or RTs is insufficient
@@ -62,168 +67,169 @@ def check_locus_rt_bcd():
         )
 
 
-# ---------------------------------------------------------------------------------------------
-#                               Importing library parameters
-# ---------------------------------------------------------------------------------------------
-print(os.getcwd())
-src_folder = os.path.dirname(os.path.realpath(__file__))
-script_folder = os.path.abspath(os.path.join(src_folder, ".."))
+def main():
+    """Main function of library design script"""
 
-PRIMER_UNIV_FILE = "Primer_univ.csv"
-JSON_FILE = "input_parameters.json"
+    # ---------------------------------------------------------------------------------------------
+    #                               Importing library parameters
+    # ---------------------------------------------------------------------------------------------
+    print(os.getcwd())
+    src_folder = os.path.dirname(os.path.realpath(__file__))
+    script_folder = os.path.abspath(os.path.join(src_folder, ".."))
 
-# Retrieving parameters from the input_parameters.json file
-json_path = src_folder + os.sep + JSON_FILE
-parameters = df.load_parameters(json_path)
-parameters["resources_path"] = src_folder + os.sep + "resources"
-parameters["bcd_rt_path"] = (
-    parameters["resources_path"] + os.sep + parameters["bcd_rt_file"]
-)
-parameters["primer_univ_path"] = (
-    parameters["resources_path"] + os.sep + PRIMER_UNIV_FILE
-)
+    PRIMER_UNIV_FILE = "Primer_univ.csv"
+    JSON_FILE = "input_parameters.json"
 
+    # Retrieving parameters from the input_parameters.json file
+    json_path = src_folder + os.sep + "resources" + os.sep + JSON_FILE
+    parameters = df.load_parameters(json_path)
+    parameters["resources_path"] = src_folder + os.sep + "resources"
+    parameters["bcd_rt_path"] = (
+        parameters["resources_path"] + os.sep + parameters["bcd_rt_file"]
+    )
+    parameters["primer_univ_path"] = (
+        parameters["resources_path"] + os.sep + PRIMER_UNIV_FILE
+    )
 
-# ---------------------------------------------------------------------------------------------
-#                                   Creating result folder
-# ---------------------------------------------------------------------------------------------
-result_folder = script_folder + os.sep + "Library_Design_Results"
-if not os.path.exists(result_folder):
-    os.mkdir(result_folder)
+    # ---------------------------------------------------------------------------------------------
+    #                                   Creating result folder
+    # ---------------------------------------------------------------------------------------------
+    result_folder = script_folder + os.sep + "Library_Design_Results"
+    if not os.path.exists(result_folder):
+        os.mkdir(result_folder)
 
-# ---------------------------------------------------------------------------------------------
-#                           Formatting and storage of sequences
-#               (primers, TRs, barcodes, genomics) in corresponding variables
-# ---------------------------------------------------------------------------------------------
+    # ---------------------------------------------------------------------------------------------
+    #                           Formatting and storage of sequences
+    #               (primers, TRs, barcodes, genomics) in corresponding variables
+    # ---------------------------------------------------------------------------------------------
 
-# Opening and formatting barcodes or RTs in the bcd_RT variable:
-bcd_rt_list = df.bcd_rt_format(parameters["bcd_rt_path"])
+    # Opening and formatting barcodes or RTs in the bcd_RT variable:
+    bcd_rt_list = df.bcd_rt_format(parameters["bcd_rt_path"])
 
-# Opening and formatting the coordinates and genomic sequences of in the list_seq_genomic variable :
-list_seq_genomic = df.seq_genomic_format(parameters["genomic_path"])
+    # Opening and formatting the coordinates and genomic sequences of in the list_seq_genomic variable :
+    list_seq_genomic = df.seq_genomic_format(parameters["genomic_path"])
 
-# Opening and formatting universal primers in the primer_univ variable : :
-primer_univ_list = df.universal_primer_format(parameters["primer_univ_path"])
+    # Opening and formatting universal primers in the primer_univ variable : :
+    primer_univ_list = df.universal_primer_format(parameters["primer_univ_path"])
 
-print_dashline()
-print("list_seq_genomic =", list_seq_genomic[0])
-print_dashline()
-print("bcd_RT =", bcd_rt_list[:2])
-print_dashline()
-print("primer_univ = ", "primer1 =", primer_univ_list["primer1"])
-print_dashline()
+    print_dashline()
+    print("list_seq_genomic =", list_seq_genomic[0])
+    print_dashline()
+    print("bcd_RT =", bcd_rt_list[:2])
+    print_dashline()
+    print("primer_univ = ", "primer1 =", primer_univ_list["primer1"])
+    print_dashline()
 
+    # ---------------------------------------------------------------------------------------------
+    #       Check the number of loci against the number of RTs or barcodes available
+    # ---------------------------------------------------------------------------------------------
+    check_locus_rt_bcd(parameters, bcd_rt_list)
 
-# ---------------------------------------------------------------------------------------------
-#       Check the number of loci against the number of RTs or barcodes available
-# ---------------------------------------------------------------------------------------------
-check_locus_rt_bcd()
+    # ---------------------------------------------------------------------------------------------
+    #                               Filling locus information
+    #           (Primers Univ, start coordinates, end coordinates, DNA genomic sequences)
+    # ---------------------------------------------------------------------------------------------
 
-# ---------------------------------------------------------------------------------------------
-#                               Filling locus information
-#           (Primers Univ, start coordinates, end coordinates, DNA genomic sequences)
-# ---------------------------------------------------------------------------------------------
+    # Search for the desired universal primers
+    primer = [
+        primer_univ_list[key]
+        for key, values in primer_univ_list.items()
+        if key == parameters["primer_univ"]
+    ]
+    primer = primer[0]
 
-# Search for the desired universal primers
-primer = [
-    primer_univ_list[key]
-    for key, values in primer_univ_list.items()
-    if key == parameters["primer_univ"]
-]
-primer = primer[0]
+    # Create and fill Library object with the different parameters
+    library = Library(parameters)
 
-# Create and fill Library object with the different parameters
-library = Library(parameters)
-
-
-# Reduce genomic sequence according to loci coordinates or probe number
-list_seq_genomic_reduced = library.reduce_list_seq(
-    list_seq_genomic,
-    resolution=parameters["resolution"],
-    nbr_probe_by_locus=parameters["nbr_probe_by_locus"],
-)
-
-# Fill the Library object with all the Locus
-for i in range(1, library.nbr_loci_total + 1):
-    locus = Locus(
-        primers_univ=primer,
-        locus_n=i,
-        chr_name=library.chromosome_name,
+    # Reduce genomic sequence according to loci coordinates or probe number
+    list_seq_genomic_reduced = library.reduce_list_seq(
+        list_seq_genomic,
         resolution=parameters["resolution"],
         nbr_probe_by_locus=parameters["nbr_probe_by_locus"],
-        design_type=parameters["design_type"],
     )
-    list_seq, start, end = locus.recover_genomic_seq(
-        i,
-        parameters["nbr_loci_total"],
-        parameters["start_lib"],
-        list_seq_genomic_reduced,
-    )
-    locus.start_seq = start
-    locus.end_seq = end
-    # locus.primers_univ=primer,
-    locus.seq_probe = list_seq
-    library.add_locus(locus)
 
-# Display of a locus as an example
-print_dashline()
-print("Locus exemple :")
-print(library.loci_list[0])
+    # Fill the Library object with all the Locus
+    for i in range(1, library.nbr_loci_total + 1):
+        locus = Locus(
+            primers_univ=primer,
+            locus_n=i,
+            chr_name=library.chromosome_name,
+            resolution=parameters["resolution"],
+            nbr_probe_by_locus=parameters["nbr_probe_by_locus"],
+            design_type=parameters["design_type"],
+        )
+        list_seq, start, end = locus.recover_genomic_seq(
+            i,
+            parameters["nbr_loci_total"],
+            parameters["start_lib"],
+            list_seq_genomic_reduced,
+        )
+        locus.start_seq = start
+        locus.end_seq = end
+        # locus.primers_univ=primer,
+        locus.seq_probe = list_seq
+        library.add_locus(locus)
 
-# Sequences for barcodes/RTs added to primary probes according to locus
-library.add_rt_bcd_to_primary_seq(bcd_rt_list, parameters)
+    # Display of a locus as an example
+    print_dashline()
+    print("Locus exemple :")
+    print(library.loci_list[0])
 
-# Sequences for universal primers added to the primary probes at each end
-library.add_univ_primer_each_side()
+    # Sequences for barcodes/RTs added to primary probes according to locus
+    library.add_rt_bcd_to_primary_seq(bcd_rt_list, parameters)
+
+    # Sequences for universal primers added to the primary probes at each end
+    library.add_univ_primer_each_side()
+
+    # Display example of a final primary probe sequence
+    print_dashline()
+    print("example of a primary probe sequence :")
+    print_dashline()
+    print(library.loci_list[0].seq_probe[0])
+
+    # ---------------------------------------------------------------------------------------------
+    #                               Checking and completion
+    # ---------------------------------------------------------------------------------------------
+
+    # Checking primary probes length for all Locus
+    min_length, max_length, diff_nbr, diff_percentage = library.check_length_seq_diff()
+    print_dashline()
+    print("Result of probes checking :")
+    print(f"minimum size for all probes combined : {min_length}")
+    print(f"maximum size for all probes combined : {max_length}")
+    print(f"difference in size : {diff_percentage:.1f}%")
+
+    # If there is a significant difference in size between the primary probes of all the Locus,
+    # completion primary probes too small to standardise the length of the oligo-pool
+    # ATTENTION: 3' completion of the sequence
+    library.completion(diff_percentage, max_length)
+
+    # ---------------------------------------------------------------------------------------------
+    #                           Writing the various results files
+    # ---------------------------------------------------------------------------------------------
+
+    # Creation of a dated file to differentiate between the different libraries designed
+    date_now = dt.datetime.now().strftime("%Y%m%d_%H%M")
+    path_result_folder = result_folder + os.sep + date_now
+    os.mkdir(path_result_folder)
+
+    # writing the file with detailed information (information for each locus and sequence)
+    df.result_details_file(path_result_folder, library)
+
+    # writing the file with all primary probe sequences for all locus (without spaces)
+    df.full_sequences_file(path_result_folder, library)
+
+    # writing file with summary information (without sequence) in the form of a table
+    df.library_summary_file(path_result_folder, library)
+
+    # Retrieve the parameters used to design the library
+    output_parameters = copy.deepcopy(parameters)
+    output_parameters["Script_Name"] = "library_design.py"
+    output_parameters["primer_Univ_File"] = PRIMER_UNIV_FILE
+
+    # Write library parameters in the 4-OutputParameters.json file
+    df.save_parameters(path_result_folder, output_parameters)
 
 
-# Display example of a final primary probe sequence
-print_dashline()
-print("example of a primary probe sequence :")
-print_dashline()
-print(library.loci_list[0].seq_probe[0])
-
-# ---------------------------------------------------------------------------------------------
-#                               Checking and completion
-# ---------------------------------------------------------------------------------------------
-
-# Checking primary probes length for all Locus
-min_length, max_length, diff_nbr, diff_percentage = library.check_length_seq_diff()
-print_dashline()
-print("Result of probes checking :")
-print(f"minimum size for all probes combined : {min_length}")
-print(f"maximum size for all probes combined : {max_length}")
-print(f"difference in size : {diff_percentage:.1f}%")
-
-# If there is a significant difference in size between the primary probes of all the Locus,
-# completion primary probes too small to standardise the length of the oligo-pool
-# ATTENTION: 3' completion of the sequence
-library.completion(diff_percentage, max_length)
-
-# ---------------------------------------------------------------------------------------------
-#                           Writing the various results files
-# ---------------------------------------------------------------------------------------------
-
-# Creation of a dated file to differentiate between the different libraries designed
-date_now = dt.datetime.now().strftime("%Y%m%d_%H%M")
-path_result_folder = result_folder + os.sep + date_now
-os.mkdir(path_result_folder)
-
-# writing the file with detailed information (information for each locus and sequence)
-df.result_details_file(path_result_folder, library)
-
-# writing the file with all primary probe sequences for all locus (without spaces)
-df.full_sequences_file(path_result_folder, library)
-
-# writing file with summary information (without sequence) in the form of a table
-df.library_summary_file(path_result_folder, library)
-
-
-# Retrieve the parameters used to design the library
-output_parameters = copy.deepcopy(parameters)
-output_parameters["Script_Name"] = "library_design.py"
-output_parameters["primer_Univ_File"] = PRIMER_UNIV_FILE
-
-
-# Write library parameters in the 4-OutputParameters.json file
-df.save_parameters(path_result_folder, output_parameters)
+if __name__ == "__main__":
+    main()
