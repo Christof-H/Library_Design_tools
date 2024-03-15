@@ -31,6 +31,7 @@ def sequences():
         seq_list.append([start, end, seq])
     return seq_list
 
+
 def test_recover_genomic_seq_locus_length_strategy(locus, sequences):
     locus.design_type = "locus_length"
     final_seq, start, end = locus.recover_genomic_seq(2, 3, 10000, sequences)

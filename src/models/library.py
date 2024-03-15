@@ -1,7 +1,7 @@
 import random
 import copy
 
-from src.models.locus import Locus
+from models.locus import Locus
 
 
 class Library:
