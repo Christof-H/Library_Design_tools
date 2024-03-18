@@ -5,11 +5,11 @@ from pathlib import Path
 from models.library import Library
 
 
-def load_parameters(json_path: str) -> dict[str, str | int]:
+def load_parameters(json_path: Path) -> dict[str, str | int]:
     """Load parameters from parameter json file
 
     Args:
-        json_path (str): File path of parameter json file
+        json_path (Path): File path of parameter json file
 
     Returns:
         dict[str, str | int]: dictionary containing parameters for library design
@@ -19,17 +19,17 @@ def load_parameters(json_path: str) -> dict[str, str | int]:
         input_param["end_lib"] = input_param["start_lib"] + (
             input_param["nbr_loci_total"] * input_param["resolution"]
         )
-        input_param["genomic_path"] = (
-            input_param["chromosome_folder"] + os.sep + input_param["chromosome_file"]
+        input_param["genomic_path"] = Path(input_param["chromosome_folder"]).joinpath(
+            input_param["chromosome_file"]
         )
         return input_param
 
 
-def universal_primer_format(path: str) -> dict[str, list[str]]:
+def universal_primer_format(path: Path) -> dict[str, list[str]]:
     """Function for opening, formatting and storing universal primer sequences.
 
     Args:
-        path (str): File path of universal primer couple
+        path (Path): File path of universal primer couple
 
     Returns:
         dict[str, list[str]]: name and sequence for universal primer
@@ -42,11 +42,11 @@ def universal_primer_format(path: str) -> dict[str, list[str]]:
     return primer_univ
 
 
-def bcd_rt_format(path: str) -> list[list[str]]:
+def bcd_rt_format(path: Path) -> list[list[str]]:
     """Function for opening, formatting and storing barcode or RT sequences.
 
     Args:
-        path (str): File path of Barcodes or RT
+        path (Path): File path of Barcodes or RT
 
     Returns:
         list[list[str]]: a list of barcode or RT [[name, sequence], ...]
@@ -60,11 +60,11 @@ def bcd_rt_format(path: str) -> list[list[str]]:
         return bcd_rt_list
 
 
-def seq_genomic_format(path: str) -> list[int, int, str]:
+def seq_genomic_format(path: Path) -> list[int, int, str]:
     """Function for opening, formatting and storing genomic sequences.
 
     Args:
-        path (str): File path of genomic sequences
+        path (Path): File path of genomic sequences
 
     Returns:
         list[int, int, str]: sequence of genomic DNA with coordinates
@@ -77,16 +77,16 @@ def seq_genomic_format(path: str) -> list[int, int, str]:
     return seq_genomic_list
 
 
-def result_details_file(path_result_folder: str, library: Library) -> None:
+def result_details_file(path_result_folder: Path, library: Library) -> None:
     """Saves separate sequences for each locus (with the corresponding locus information).
 
     Args:
-        path_result_folder (str):
+        path_result_folder (Path):
             Folder path for results files
         library (Library):
             library containing all information and sequences
     """
-    result_details = path_result_folder + os.sep + "1_Library_details.txt"
+    result_details = path_result_folder.joinpath("1_Library_details.txt")
     with open(result_details, mode="w", encoding="UTF-8") as file:
         for locus in library.loci_list:
             file.write(
@@ -97,35 +97,34 @@ Start:{locus.start_seq} End:{locus.end_seq} Bcd_locus:{locus.bcd_locus}\n"
                 file.write(seq + "\n")
 
 
-def full_sequences_file(path_result_folder: str, library: Library) -> None:
+def full_sequences_file(path_result_folder: Path, library: Library) -> None:
     """Save all the sequences in the library without any information.
 
     Args:
-        path_result_folder (str):
+        path_result_folder (Path):
             Folder path for results files
         library (Library):
             library containing all information and sequences
     """
-    full_sequence = path_result_folder + os.sep + "2_Full_sequence_Only.txt"
+    full_sequence = path_result_folder.joinpath("2_Full_sequence_Only.txt")
     with open(full_sequence, mode="w", encoding="UTF-8") as file:
         for locus in library.loci_list:
             for seq in locus.seq_probe:
                 file.write(seq.replace(" ", "") + "\n")
 
 
-def library_summary_file(path_result_folder: str, library: Library) -> None:
+def library_summary_file(path_result_folder: Path, library: Library) -> None:
     """Save a csv file with a summary of the various information concerning the loci in the
     library (locus number, start, end, region size, universal primer...).
 
     Args:
-        path_result_folder (str):
+        path_result_folder (Path):
             Folder path for results files
         library (Library):
             library containing all information and sequences
     """
 
-    path = Path(path_result_folder)
-    summary = path.joinpath("3_Library_summary.csv")
+    summary = path_result_folder.joinpath("3_Library_summary.csv")
     with open(summary, mode="w", encoding="UTF-8") as file:
         file.write(
             "Chromosome,Locus_N°,Start,End,Region size, Barcode,PU.Fw,PU.Rev,Nbr_Probes\n"
@@ -139,20 +138,25 @@ def library_summary_file(path_result_folder: str, library: Library) -> None:
 
 
 def save_parameters(
-    path_result_folder: str, out_parameters: dict[str, str | int]
+    path_result_folder: Path, out_parameters: dict[str, str | int]
 ) -> None:
     """Save all parameters used to design librairy in a json file.
 
     Args:
-        path_result_folder (str):
+        path_result_folder (Path):
             Folder path for results files
         out_parameters (dict):
             dictionary with specific parameters
     """
-    parameters_file_path = path_result_folder + os.sep + "4-OutputParameters.json"
+    parameters_file_path = path_result_folder.joinpath("4-OutputParameters.json")
+    # Convert all Path  object in str (Object of type PosixPath is not JSON serializable)
+    out_parameters["genomic_path"] = str(out_parameters["genomic_path"])
+    out_parameters["resources_path"] = str(out_parameters["resources_path"])
+    out_parameters["bcd_rt_path"] = str(out_parameters["bcd_rt_path"])
+    out_parameters["primer_univ_path"] = str(out_parameters["primer_univ_path"])
+
+    path_str = str(parameters_file_path)
     with open(parameters_file_path, mode="w", encoding="UTF-8") as file:
         json.dump(out_parameters, file, indent=4)
 
-    print(
-        f"All files concerning your library design are saved in {path_result_folder}/"
-    )
+    print(f"All files concerning your library design are saved in {path_str}/")

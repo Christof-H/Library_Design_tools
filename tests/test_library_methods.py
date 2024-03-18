@@ -1,8 +1,8 @@
 import pytest
 import random
 
-from src.models.library import Library
-from src.models.locus import Locus
+from models.library import Library
+from models.locus import Locus
 
 
 @pytest.fixture

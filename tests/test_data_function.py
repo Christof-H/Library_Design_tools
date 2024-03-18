@@ -1,7 +1,7 @@
 import pytest
 import os
 
-import src.modules.data_function as df
+import modules.data_function as df
 
 
 @pytest.fixture
