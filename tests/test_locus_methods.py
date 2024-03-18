@@ -3,7 +3,7 @@ import os
 import pytest
 import random
 
-from src.models.locus import Locus
+from models.locus import Locus
 
 
 @pytest.fixture

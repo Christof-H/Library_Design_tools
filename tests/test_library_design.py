@@ -5,9 +5,9 @@ import json
 import re
 import datetime as dt
 
-import src.modules.data_function as df
-from src.models.library import Library
-from src.models.locus import Locus
+import modules.data_function as df
+from models.library import Library
+from models.locus import Locus
 
 
 @pytest.fixture(scope="session")

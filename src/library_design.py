@@ -29,9 +29,11 @@ universal primers.
 """
 import os
 import copy
-import json
+from pathlib import Path
 
 import datetime as dt
+from argparse import ArgumentParser
+
 import modules.data_function as df
 from models.library import Library
 from models.locus import Locus
@@ -46,7 +48,9 @@ def print_dashline():
     print("-" * 70)
 
 
-def check_locus_rt_bcd(parameters: dict[str, str | int], bcd_rt_list: list[list[str]]) -> None:
+def check_locus_rt_bcd(
+    parameters: dict[str, str | int], bcd_rt_list: list[list[str]]
+) -> None:
     """Check that there are enough barcodes or RTs for the total number of loci.
     Args:
         parameters (dict[str, str | int]):
@@ -73,30 +77,30 @@ def main():
     # ---------------------------------------------------------------------------------------------
     #                               Importing library parameters
     # ---------------------------------------------------------------------------------------------
-    print(os.getcwd())
-    src_folder = os.path.dirname(os.path.realpath(__file__))
-    script_folder = os.path.abspath(os.path.join(src_folder, ".."))
+    src_folder = Path(__file__).absolute().parent
+    script_folder = src_folder.parent
 
     PRIMER_UNIV_FILE = "Primer_univ.csv"
     JSON_FILE = "input_parameters.json"
 
     # Retrieving parameters from the input_parameters.json file
-    json_path = src_folder + os.sep + "resources" + os.sep + JSON_FILE
+    json_path = src_folder.joinpath("resources", JSON_FILE)
+
     parameters = df.load_parameters(json_path)
-    parameters["resources_path"] = src_folder + os.sep + "resources"
-    parameters["bcd_rt_path"] = (
-        parameters["resources_path"] + os.sep + parameters["bcd_rt_file"]
+    parameters["resources_path"] = src_folder.joinpath("resources")
+    parameters["bcd_rt_path"] = parameters["resources_path"].joinpath(
+        parameters["bcd_rt_file"]
     )
-    parameters["primer_univ_path"] = (
-        parameters["resources_path"] + os.sep + PRIMER_UNIV_FILE
+    parameters["primer_univ_path"] = parameters["resources_path"].joinpath(
+        PRIMER_UNIV_FILE
     )
 
     # ---------------------------------------------------------------------------------------------
     #                                   Creating result folder
     # ---------------------------------------------------------------------------------------------
-    result_folder = script_folder + os.sep + "Library_Design_Results"
-    if not os.path.exists(result_folder):
-        os.mkdir(result_folder)
+    result_folder = script_folder.joinpath("Library_Design_Results")
+    if not result_folder.exists():
+        result_folder.mkdir()
 
     # ---------------------------------------------------------------------------------------------
     #                           Formatting and storage of sequences
@@ -210,8 +214,8 @@ def main():
 
     # Creation of a dated file to differentiate between the different libraries designed
     date_now = dt.datetime.now().strftime("%Y%m%d_%H%M")
-    path_result_folder = result_folder + os.sep + date_now
-    os.mkdir(path_result_folder)
+    path_result_folder = result_folder.joinpath(date_now)
+    path_result_folder.mkdir()
 
     # writing the file with detailed information (information for each locus and sequence)
     df.result_details_file(path_result_folder, library)
