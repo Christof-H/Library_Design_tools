@@ -155,7 +155,7 @@ def save_parameters(
     out_parameters["bcd_rt_path"] = str(out_parameters["bcd_rt_path"])
     out_parameters["primer_univ_path"] = str(out_parameters["primer_univ_path"])
 
-    path_str = str(parameters_file_path)
+    path_str = str(path_result_folder)
     with open(parameters_file_path, mode="w", encoding="UTF-8") as file:
         json.dump(out_parameters, file, indent=4)
 
