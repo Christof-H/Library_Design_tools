@@ -73,34 +73,50 @@ def check_locus_rt_bcd(
 
 def main():
     """Main function of library design script"""
+    primer_univ_file = "Primer_univ.csv"
+    json_file = "input_parameters.json"
+    src_folder = Path(__file__).absolute().parent
+    script_folder = src_folder.parent
+
+    # ---------------------------------------------------------------------------------------------
+    #                                   CLI Arguments
+    # ---------------------------------------------------------------------------------------------
+    parser = ArgumentParser()
+
+    parser.add_argument(
+        "-o",
+        "--output",
+        type=str,
+        default=script_folder.joinpath("Library_Design_Results"),
+        help="Path folder to save results files.\nDEFAULT: folder script",
+    )
+    args = parser.parse_args()
 
     # ---------------------------------------------------------------------------------------------
     #                               Importing library parameters
     # ---------------------------------------------------------------------------------------------
-    src_folder = Path(__file__).absolute().parent
-    script_folder = src_folder.parent
-
-    PRIMER_UNIV_FILE = "Primer_univ.csv"
-    JSON_FILE = "input_parameters.json"
 
     # Retrieving parameters from the input_parameters.json file
-    json_path = src_folder.joinpath("resources", JSON_FILE)
-
+    json_path = src_folder.joinpath("resources", json_file)
     parameters = df.load_parameters(json_path)
     parameters["resources_path"] = src_folder.joinpath("resources")
     parameters["bcd_rt_path"] = parameters["resources_path"].joinpath(
         parameters["bcd_rt_file"]
     )
     parameters["primer_univ_path"] = parameters["resources_path"].joinpath(
-        PRIMER_UNIV_FILE
+        primer_univ_file
     )
 
     # ---------------------------------------------------------------------------------------------
     #                                   Creating result folder
     # ---------------------------------------------------------------------------------------------
-    result_folder = script_folder.joinpath("Library_Design_Results")
-    if not result_folder.exists():
-        result_folder.mkdir()
+    # TODO: choisir entre args.output ou result_folder = args.output
+    # TODO: Quel moyen pour vérifier qu'un argument est la valeur par défaut ou une valeur entrée par l'utilisateur
+    # TODO: Faire une fonction dans data_function ???
+    if args.output != parser.get_default("output"):
+        args.output = Path(args.output).joinpath("Library_Design_Results")
+    if not args.output.exists():
+        args.output.mkdir()
 
     # ---------------------------------------------------------------------------------------------
     #                           Formatting and storage of sequences
@@ -214,7 +230,7 @@ def main():
 
     # Creation of a dated file to differentiate between the different libraries designed
     date_now = dt.datetime.now().strftime("%Y%m%d_%H%M")
-    path_result_folder = result_folder.joinpath(date_now)
+    path_result_folder = args.output.joinpath(date_now)
     path_result_folder.mkdir()
 
     # writing the file with detailed information (information for each locus and sequence)
@@ -229,7 +245,7 @@ def main():
     # Retrieve the parameters used to design the library
     output_parameters = copy.deepcopy(parameters)
     output_parameters["Script_Name"] = "library_design.py"
-    output_parameters["primer_Univ_File"] = PRIMER_UNIV_FILE
+    output_parameters["primer_Univ_File"] = primer_univ_file
 
     # Write library parameters in the 4-OutputParameters.json file
     df.save_parameters(path_result_folder, output_parameters)
