@@ -84,6 +84,14 @@ def main():
     parser = ArgumentParser()
 
     parser.add_argument(
+        "-p",
+        "--parameters",
+        type=str,
+        default=src_folder.joinpath("resources", json_file),
+        help="Path of the parameters.json folder.\nDEFAULT: folder containing a default input_parameters.json file",
+    )
+
+    parser.add_argument(
         "-o",
         "--output",
         type=str,
@@ -97,8 +105,9 @@ def main():
     # ---------------------------------------------------------------------------------------------
 
     # Retrieving parameters from the input_parameters.json file
-    json_path = src_folder.joinpath("resources", json_file)
-    parameters = df.load_parameters(json_path)
+    # json_path = args.parameters
+    # TODO: choisir entre args.parameters ou json_path = args.parameters
+    parameters = df.load_parameters(args.parameters)
     parameters["resources_path"] = src_folder.joinpath("resources")
     parameters["bcd_rt_path"] = parameters["resources_path"].joinpath(
         parameters["bcd_rt_file"]
