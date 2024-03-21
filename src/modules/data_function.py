@@ -5,14 +5,14 @@ from pathlib import Path
 from models.library import Library
 
 
-def load_parameters(json_path: Path) -> dict[str, str | int]:
+def load_parameters(json_path: Path) -> dict[str, str | int | Path]:
     """Load parameters from parameter json file
 
     Args:
         json_path (Path): File path of parameter json file
 
     Returns:
-        dict[str, str | int]: dictionary containing parameters for library design
+        dict[str, str | int | Path]: dictionary containing parameters for library design
     """
     with open(json_path, mode="r", encoding="UTF-8") as file:
         input_param = json.load(file)
