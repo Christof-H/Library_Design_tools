@@ -86,7 +86,7 @@ def main():
     parser.add_argument(
         "-p",
         "--parameters",
-        type=str,
+        type=Path,
         default=src_folder.joinpath("resources", json_file),
         help="Path of the parameters.json folder.\nDEFAULT: folder containing a default input_parameters.json file",
     )
@@ -95,8 +95,8 @@ def main():
         "-o",
         "--output",
         type=str,
-        default=script_folder.joinpath("Library_Design_Results"),
-        help="Path folder to save results files.\nDEFAULT: folder script",
+        default=Path.cwd(),
+        help="Path folder to save results files.\nDEFAULT: current working directory",
     )
     args = parser.parse_args()
 
@@ -120,10 +120,8 @@ def main():
     #                                   Creating result folder
     # ---------------------------------------------------------------------------------------------
     # TODO: choisir entre args.output ou result_folder = args.output
-    # TODO: Quel moyen pour vérifier qu'un argument est la valeur par défaut ou une valeur entrée par l'utilisateur
     # TODO: Faire une fonction dans data_function ???
-    if args.output != parser.get_default("output"):
-        args.output = Path(args.output).joinpath("Library_Design_Results")
+    args.output = args.output.joinpath("Library_Design_Results")
     if not args.output.exists():
         args.output.mkdir()
 
