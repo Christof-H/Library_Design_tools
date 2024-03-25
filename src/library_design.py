@@ -71,6 +71,20 @@ def check_locus_rt_bcd(
         )
 
 
+def print_sample(
+    list_seq_genomic: list[int, int, str],
+    bcd_rt_list: list[list[str]],
+    primer_univ_list: dict[str, list[str]],
+) -> None:
+    print_dashline()
+    print("list_seq_genomic =", list_seq_genomic[0])
+    print_dashline()
+    print("bcd_RT =", bcd_rt_list[:2])
+    print_dashline()
+    print("primer_univ = ", "primer1 =", primer_univ_list["primer1"])
+    print_dashline()
+
+
 def main():
     """Main function of library design script"""
     primer_univ_file = "Primer_univ.csv"
@@ -128,13 +142,7 @@ def main():
     # Opening and formatting universal primers in the primer_univ variable : :
     primer_univ_list = df.universal_primer_format(parameters["primer_univ_path"])
 
-    print_dashline()
-    print("list_seq_genomic =", list_seq_genomic[0])
-    print_dashline()
-    print("bcd_RT =", bcd_rt_list[:2])
-    print_dashline()
-    print("primer_univ = ", "primer1 =", primer_univ_list["primer1"])
-    print_dashline()
+    print_sample(list_seq_genomic, bcd_rt_list, primer_univ_list)
 
     # ---------------------------------------------------------------------------------------------
     #       Check the number of loci against the number of RTs or barcodes available
