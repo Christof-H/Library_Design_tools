@@ -34,7 +34,7 @@ from pathlib import Path
 import datetime as dt
 from argparse import ArgumentParser
 
-import modules.data_function as df
+import core.data_function as df
 from models.library import Library
 from models.locus import Locus
 from models.invalidNbrLocusException import InvalidNbrLocusException

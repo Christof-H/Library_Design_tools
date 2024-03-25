@@ -2,7 +2,7 @@ import pytest
 import re
 from pathlib import Path
 
-import modules.data_function as df
+import core.data_function as df
 from models.library import Library
 from models.locus import Locus
 
