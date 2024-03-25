@@ -5,11 +5,18 @@ from pathlib import Path
 from models.library import Library
 
 
-def load_parameters(json_path: Path) -> dict[str, str | int | Path]:
+def load_parameters(
+    json_path: Path, src_folder: Path, primer_univ_file: str
+) -> dict[str, str | int | Path]:
     """Load parameters from parameter json file
 
     Args:
-        json_path (Path): File path of parameter json file
+        json_path (Path):
+            File path of parameter json file
+        src_folder (Path):
+            path of the src folder script
+        primer_univ_file (str):
+            file name for universal primers
 
     Returns:
         dict[str, str | int | Path]: dictionary containing parameters for library design
@@ -21,6 +28,13 @@ def load_parameters(json_path: Path) -> dict[str, str | int | Path]:
         )
         input_param["genomic_path"] = Path(input_param["chromosome_folder"]).joinpath(
             input_param["chromosome_file"]
+        )
+        input_param["resources_path"] = src_folder.joinpath("resources")
+        input_param["bcd_rt_path"] = input_param["resources_path"].joinpath(
+            input_param["bcd_rt_file"]
+        )
+        input_param["primer_univ_path"] = input_param["resources_path"].joinpath(
+            primer_univ_file
         )
         return input_param
 
