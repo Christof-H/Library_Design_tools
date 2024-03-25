@@ -12,7 +12,7 @@ def file_path():
     dic_path["rt_file_path"] = script_folder.joinpath("src/resources/List_RT.csv")
     dic_path["bcd_file_path"] = script_folder.joinpath("src/resources/Barcodes.csv")
     dic_path["univ_primer"] = script_folder.joinpath("src/resources/Primer_univ.csv")
-    dic_path["exemple_genomic_seq"] = script_folder.joinpath("src/resources/chr3L.bed")
+    dic_path["exemple_genomic_seq"] = test_folder.joinpath("resources/chr3L.bed")
     return dic_path
 
 
