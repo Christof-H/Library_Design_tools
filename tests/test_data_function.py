@@ -1,7 +1,7 @@
 import pytest
 import os
 from pathlib import Path
-import modules.data_function as df
+import core.data_function as df
 
 
 @pytest.fixture
