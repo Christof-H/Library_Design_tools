@@ -76,7 +76,6 @@ def main():
     primer_univ_file = "Primer_univ.csv"
     json_file = "input_parameters.json"
     src_folder = Path(__file__).absolute().parent
-    script_folder = src_folder.parent
 
     # ---------------------------------------------------------------------------------------------
     #                                   CLI Arguments
@@ -105,25 +104,15 @@ def main():
     # ---------------------------------------------------------------------------------------------
 
     # Retrieving parameters from the input_parameters.json file
-    # json_path = args.parameters
-    # TODO: choisir entre args.parameters ou json_path = args.parameters
-    parameters = df.load_parameters(args.parameters)
-    parameters["resources_path"] = src_folder.joinpath("resources")
-    parameters["bcd_rt_path"] = parameters["resources_path"].joinpath(
-        parameters["bcd_rt_file"]
-    )
-    parameters["primer_univ_path"] = parameters["resources_path"].joinpath(
-        primer_univ_file
-    )
+    json_path = args.parameters
+    parameters = df.load_parameters(json_path, src_folder, primer_univ_file)
 
     # ---------------------------------------------------------------------------------------------
     #                                   Creating result folder
     # ---------------------------------------------------------------------------------------------
-    # TODO: choisir entre args.output ou result_folder = args.output
-    # TODO: Faire une fonction dans data_function ???
-    args.output = args.output.joinpath("Library_Design_Results")
-    if not args.output.exists():
-        args.output.mkdir()
+    result_folder = args.output.joinpath("Library_Design_Results")
+    if not result_folder.exists():
+        result_folder.mkdir()
 
     # ---------------------------------------------------------------------------------------------
     #                           Formatting and storage of sequences
@@ -237,7 +226,7 @@ def main():
 
     # Creation of a dated file to differentiate between the different libraries designed
     date_now = dt.datetime.now().strftime("%Y%m%d_%H%M")
-    path_result_folder = args.output.joinpath(date_now)
+    path_result_folder = result_folder.joinpath(date_now)
     path_result_folder.mkdir()
 
     # writing the file with detailed information (information for each locus and sequence)
