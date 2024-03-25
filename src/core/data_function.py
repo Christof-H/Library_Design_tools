@@ -138,7 +138,7 @@ def library_summary_file(path_result_folder: Path, library: Library) -> None:
 
 
 def save_parameters(
-    path_result_folder: Path, out_parameters: dict[str, str | int]
+    path_result_folder: Path, out_parameters: dict[str, str | int | Path]
 ) -> None:
     """Save all parameters used to design librairy in a json file.
 
@@ -150,12 +150,12 @@ def save_parameters(
     """
     parameters_file_path = path_result_folder.joinpath("4-OutputParameters.json")
     # Convert all Path  object in str (Object of type PosixPath is not JSON serializable)
-    out_parameters["genomic_path"] = str(out_parameters["genomic_path"])
-    out_parameters["resources_path"] = str(out_parameters["resources_path"])
-    out_parameters["bcd_rt_path"] = str(out_parameters["bcd_rt_path"])
-    out_parameters["primer_univ_path"] = str(out_parameters["primer_univ_path"])
+    out_parameters["genomic_path"] = out_parameters["genomic_path"].as_posix()
+    out_parameters["resources_path"] = out_parameters["resources_path"].as_posix()
+    out_parameters["bcd_rt_path"] = out_parameters["bcd_rt_path"].as_posix()
+    out_parameters["primer_univ_path"] = out_parameters["primer_univ_path"].as_posix()
 
-    path_str = str(path_result_folder)
+    path_str = path_result_folder.as_posix()
     with open(parameters_file_path, mode="w", encoding="UTF-8") as file:
         json.dump(out_parameters, file, indent=4)
 
