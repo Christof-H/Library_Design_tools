@@ -35,6 +35,7 @@ import datetime as dt
 from argparse import ArgumentParser
 
 import core.data_function as df
+from core.args import parse_args
 from models.library import Library
 from models.locus import Locus
 from models.invalidNbrLocusException import InvalidNbrLocusException
@@ -94,31 +95,15 @@ def main():
     # ---------------------------------------------------------------------------------------------
     #                                   CLI Arguments
     # ---------------------------------------------------------------------------------------------
-    parser = ArgumentParser()
 
-    parser.add_argument(
-        "-p",
-        "--parameters",
-        type=Path,
-        default=src_folder.joinpath("resources", json_file),
-        help="Path of the parameters.json folder.\nDEFAULT: folder containing a default input_parameters.json file",
-    )
-
-    parser.add_argument(
-        "-o",
-        "--output",
-        type=str,
-        default=Path.cwd(),
-        help="Path folder to save results files.\nDEFAULT: current working directory",
-    )
-    args = parser.parse_args()
+    args = parse_args()
 
     # ---------------------------------------------------------------------------------------------
     #                               Importing library parameters
     # ---------------------------------------------------------------------------------------------
 
     # Retrieving parameters from the input_parameters.json file
-    json_path = args.parameters
+    json_path = args.parameters.joinpath(json_file)
     parameters = df.load_parameters(json_path, src_folder, primer_univ_file)
 
     # ---------------------------------------------------------------------------------------------
