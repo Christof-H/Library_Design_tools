@@ -1,10 +1,19 @@
+import argparse
 from argparse import ArgumentParser
 from pathlib import Path
 
 
+def check_args(arguments: argparse.ArgumentParser) -> None:
+    if not arguments.parameters.exists():
+        raise SystemExit(
+            f"Input parameters file folder ({arguments.parameters.as_posix()}): INVALID."
+        )
+    if not arguments.output.exists():
+        raise SystemExit(f"Output folder ({arguments.output.as_posix()}): INVALID.")
+
+
 def parse_args():
-    # TODO: json_file present dans le main et redéfini ici ????? import le la variable depuis le main avec une variable CONSTANTE ???
-    json_file = "input_parameters.json"
+    # TODO: src_folder present dans le main et redéfini ici ????? import le la variable depuis le main avec une variable CONSTANTE ???
     src_folder = Path(__file__).absolute().parents[1]
 
     parser = ArgumentParser()
@@ -24,4 +33,6 @@ def parse_args():
         default=Path.cwd(),
         help="Path folder to save results files.\nDEFAULT: current working directory",
     )
+    check_args(parser.parse_args())
+
     return parser.parse_args()
