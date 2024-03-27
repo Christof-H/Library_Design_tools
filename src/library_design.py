@@ -14,7 +14,7 @@ Using the parameters, the script will :
      i) calculate the coordinates for each locus 
      ii) select primary probe sequences for each locus 
      iii) concatenate primary sequences with readout sequence and universal primers
-     iiii) check the homogeneity of the size of the differents probes. 
+     iiii) check the homogeneity of the size of the different probes.
 Several output text files are created after running the Library_Design.py script. 
 Library_summary.csv file containing a table summarising all the information on each 
 locus (locus number, start position, end position, readout probe, primer forward, primer reverse, 
@@ -88,8 +88,6 @@ def print_sample(
 
 def main():
     """Main function of library design script"""
-    primer_univ_file = "Primer_univ.csv"
-    json_file = "input_parameters.json"
     src_folder = Path(__file__).absolute().parent
 
     # ---------------------------------------------------------------------------------------------
@@ -103,8 +101,8 @@ def main():
     # ---------------------------------------------------------------------------------------------
 
     # Retrieving parameters from the input_parameters.json file
-    json_path = args.parameters.joinpath(json_file)
-    parameters = df.load_parameters(json_path, src_folder, primer_univ_file)
+    json_path = args.parameters
+    parameters = df.load_parameters(json_path, src_folder)
 
     # ---------------------------------------------------------------------------------------------
     #                                   Creating result folder
@@ -234,7 +232,6 @@ def main():
     # Retrieve the parameters used to design the library
     output_parameters = copy.deepcopy(parameters)
     output_parameters["Script_Name"] = "library_design.py"
-    output_parameters["primer_Univ_File"] = primer_univ_file
 
     # Write library parameters in the 4-OutputParameters.json file
     df.save_parameters(path_result_folder, output_parameters)

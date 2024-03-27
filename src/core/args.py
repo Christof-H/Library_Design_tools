@@ -4,17 +4,23 @@ from pathlib import Path
 
 
 def check_args(arguments: argparse.ArgumentParser) -> None:
-    if not arguments.parameters.exists():
+    if not arguments.parameters.parent.exists():
         raise SystemExit(
-            f"Input parameters file folder ({arguments.parameters.as_posix()}): INVALID."
+            f"Input parameters file folder ({arguments.parameters.parent.as_posix()}): INVALID FOLDER."
+        )
+    if not arguments.parameters.is_file():
+        raise SystemExit(
+            f"Input parameters file ({arguments.parameters.name}): FILE NOT FOUND."
         )
     if not arguments.output.exists():
-        raise SystemExit(f"Output folder ({arguments.output.as_posix()}): INVALID.")
+        raise SystemExit(
+            f"Output folder ({arguments.output.as_posix()}): INVALID FOLDER."
+        )
 
 
-def parse_args():
-    # TODO: src_folder present dans le main et redéfini ici ????? import le la variable depuis le main avec une variable CONSTANTE ???
+def parse_args() -> argparse.ArgumentParser:
     src_folder = Path(__file__).absolute().parents[1]
+    params_file_path = src_folder.joinpath("resources", "input_parameters.json")
 
     parser = ArgumentParser()
 
@@ -22,8 +28,8 @@ def parse_args():
         "-p",
         "--parameters",
         type=Path,
-        default=src_folder.joinpath("resources"),
-        help="Path of the parameters.json folder.\nDEFAULT: folder containing a default input_parameters.json file",
+        default=params_file_path,
+        help="Path of the parameters.json file.\nDEFAULT: default input_parameters.json file",
     )
 
     parser.add_argument(
