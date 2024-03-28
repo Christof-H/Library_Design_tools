@@ -35,7 +35,7 @@ import datetime as dt
 from argparse import ArgumentParser
 
 import core.data_function as df
-from core.args import parse_args
+from core.args import parse_arguments, check_args
 from models.library import Library
 from models.locus import Locus
 from models.invalidNbrLocusException import InvalidNbrLocusException
@@ -94,8 +94,8 @@ def main():
     #                                   CLI Arguments
     # ---------------------------------------------------------------------------------------------
 
-    args = parse_args()
-
+    args = parse_arguments()
+    check_args(args)
     # ---------------------------------------------------------------------------------------------
     #                               Importing library parameters
     # ---------------------------------------------------------------------------------------------
