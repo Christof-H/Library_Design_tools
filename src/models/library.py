@@ -157,3 +157,17 @@ class Library:
             print("-" * 70)
             print("No completion required")
             print("-" * 70)
+
+    def recover_loci_probes_length_info(self) -> list[int]:
+        """Retrieves the number of probes per locus, or the size of each locus depending on the drawing type.
+
+        Returns:
+            list_info (list[int]): list of locus length or number of probes
+        """
+        list_info = []
+        for locus in self.loci_list:
+            if self.design_type == "locus_length":
+                list_info.append(len(locus.seq_probe))
+            else:
+                list_info.append((locus.end_seq - locus.start_seq))
+        return list_info
