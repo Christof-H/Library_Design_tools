@@ -14,7 +14,7 @@ Using the parameters, the script will :
      i) calculate the coordinates for each locus 
      ii) select primary probe sequences for each locus 
      iii) concatenate primary sequences with readout sequence and universal primers
-     iiii) check the homogeneity of the size of the differents probes. 
+     iiii) check the homogeneity of the size of the different probes.
 Several output text files are created after running the Library_Design.py script. 
 Library_summary.csv file containing a table summarising all the information on each 
 locus (locus number, start position, end position, readout probe, primer forward, primer reverse, 
@@ -35,6 +35,8 @@ import datetime as dt
 from argparse import ArgumentParser
 
 import core.data_function as df
+from core.args import parse_arguments, check_args
+from core.function import display_locus_info
 from models.library import Library
 from models.locus import Locus
 from models.invalidNbrLocusException import InvalidNbrLocusException
@@ -87,39 +89,21 @@ def print_sample(
 
 def main():
     """Main function of library design script"""
-    primer_univ_file = "Primer_univ.csv"
-    json_file = "input_parameters.json"
     src_folder = Path(__file__).absolute().parent
 
     # ---------------------------------------------------------------------------------------------
     #                                   CLI Arguments
     # ---------------------------------------------------------------------------------------------
-    parser = ArgumentParser()
 
-    parser.add_argument(
-        "-p",
-        "--parameters",
-        type=Path,
-        default=src_folder.joinpath("resources", json_file),
-        help="Path of the parameters.json folder.\nDEFAULT: folder containing a default input_parameters.json file",
-    )
-
-    parser.add_argument(
-        "-o",
-        "--output",
-        type=str,
-        default=Path.cwd(),
-        help="Path folder to save results files.\nDEFAULT: current working directory",
-    )
-    args = parser.parse_args()
-
+    args = parse_arguments()
+    check_args(args)
     # ---------------------------------------------------------------------------------------------
     #                               Importing library parameters
     # ---------------------------------------------------------------------------------------------
 
     # Retrieving parameters from the input_parameters.json file
     json_path = args.parameters
-    parameters = df.load_parameters(json_path, src_folder, primer_univ_file)
+    parameters = df.load_parameters(json_path, src_folder)
 
     # ---------------------------------------------------------------------------------------------
     #                                   Creating result folder
@@ -229,13 +213,29 @@ def main():
     library.completion(diff_percentage, max_length)
 
     # ---------------------------------------------------------------------------------------------
-    #                           Writing the various results files
+    #                           Create result folder
     # ---------------------------------------------------------------------------------------------
 
     # Creation of a dated file to differentiate between the different libraries designed
     date_now = dt.datetime.now().strftime("%Y%m%d_%H%M")
     path_result_folder = result_folder.joinpath(date_now)
     path_result_folder.mkdir()
+
+    # ---------------------------------------------------------------------------------------------
+    #                           Display probes/length by locus
+    # ---------------------------------------------------------------------------------------------
+    list_info = library.recover_loci_probes_length_info()
+    display_locus_info(
+        list_info,
+        path_result_folder,
+        parameters["design_type"],
+        parameters["resolution"],
+        parameters["nbr_probe_by_locus"],
+    )
+
+    # ---------------------------------------------------------------------------------------------
+    #                           Writing the various results files
+    # ---------------------------------------------------------------------------------------------
 
     # writing the file with detailed information (information for each locus and sequence)
     df.result_details_file(path_result_folder, library)
@@ -249,7 +249,6 @@ def main():
     # Retrieve the parameters used to design the library
     output_parameters = copy.deepcopy(parameters)
     output_parameters["Script_Name"] = "library_design.py"
-    output_parameters["primer_Univ_File"] = primer_univ_file
 
     # Write library parameters in the 4-OutputParameters.json file
     df.save_parameters(path_result_folder, output_parameters)
