@@ -25,6 +25,7 @@ def setup(tmp_path_factory):
         "resources/design_by_probe_nbr_bcd/IN/input_parameters.json",
         "resources/design_by_probe_nbr_rt/IN/input_parameters.json",
     ]
+    # Creation of 4 libraries based on different scenarios by iterating on input_parameters files
     for json_path in input_param_folder:
         full_path = test_folder.joinpath(json_path)
         input_parameters = df.load_parameters(full_path, test_folder)
@@ -103,6 +104,8 @@ def setup(tmp_path_factory):
 
 
 def test_summary_locus_length_with_bcd(setup):
+    """Analysis of the newly generated summary.csv file with the initial summary.csv file for the library design
+    scenario according to loci size and using barcodes"""
     path_result_folder = setup["lib_by_length_bcd_path"]
     library = setup["lib_by_length_bcd"]
     path_output = setup["test_folder"].joinpath("resources/design_by_length_bcd/OUT")
@@ -120,6 +123,8 @@ def test_summary_locus_length_with_bcd(setup):
 
 
 def test_summary_locus_length_with_rt(setup):
+    """Analysis of the newly generated summary.csv file with the initial summary.csv file for the library design
+    scenario according to loci size and using RTs"""
     path_result_folder = setup["lib_by_length_rt_path"]
     library = setup["lib_by_length_rt"]
     path_output = setup["test_folder"].joinpath("resources/design_by_length_rt/OUT")
@@ -137,6 +142,8 @@ def test_summary_locus_length_with_rt(setup):
 
 
 def test_summary_locus_nbr_probe_with_bcd(setup):
+    """Analysis of the newly generated summary.csv file with the initial summary.csv file for the library design
+    scenario according to number of probes by locus and using barcodes"""
     path_result_folder = setup["lib_by_probe_nbr_bcd_path"]
     library = setup["lib_by_probe_nbr_bcd"]
     path_output = setup["test_folder"].joinpath("resources/design_by_probe_nbr_bcd/OUT")
@@ -154,6 +161,8 @@ def test_summary_locus_nbr_probe_with_bcd(setup):
 
 
 def test_summary_locus_nbr_probe_with_rt(setup):
+    """Analysis of the newly generated summary.csv file with the initial summary.csv file for the library design
+    scenario according to number of probes by locus and using RTs"""
     path_result_folder = setup["lib_by_probe_nbr_rt_path"]
     library = setup["lib_by_probe_nbr_rt"]
     path_output = setup["test_folder"].joinpath("resources/design_by_probe_nbr_rt/OUT")

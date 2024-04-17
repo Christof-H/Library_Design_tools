@@ -6,6 +6,7 @@ import core.data_function as df
 
 @pytest.fixture
 def file_path():
+    """Set up paths to find the various RT files, Barcodes, universal primers and genomic sequences"""
     test_folder = Path(__file__).absolute().parent
     script_folder = test_folder.parent
     dic_path = {}
@@ -17,6 +18,7 @@ def file_path():
 
 
 def test_bcd_rt_format_rt_output(file_path):
+    """Test whether the list of RTs corresponds to the expected shape and list of RTs"""
     expected_output_rt_0 = ["revMer1", "caccgacgtcgcatagaacg"]
     expected_output_rt_last = ["revMer6", "ttggaggtgtagggagtaaa"]
     list_bcd_rt = df.bcd_rt_format(file_path["rt_file_path"])
@@ -26,6 +28,7 @@ def test_bcd_rt_format_rt_output(file_path):
 
 
 def test_bcd_rt_format_bcd_output(file_path):
+    """Test whether the list of RTs corresponds to the expected shape and list of barcodes"""
     expected_output_bcd_0 = ["Bcd_001", "GCTATCGTTCGTTCGAGGCC"]
     expected_output_bcd_last = ["Bcd_199", "tcaagcgtgtcggcgttgcg"]
     list_bcd_rt = df.bcd_rt_format(file_path["bcd_file_path"])
@@ -35,6 +38,7 @@ def test_bcd_rt_format_bcd_output(file_path):
 
 
 def test_universal_primer_format_output(file_path):
+    """Test whether the list of universal primers corresponds to the expected shape and list of universal primers"""
     expected_output_univ_primer_1 = [
         "BB297.Fw",
         "GACTGGTACTCGCGTGACTTG",
@@ -48,6 +52,7 @@ def test_universal_primer_format_output(file_path):
 
 
 def test_seq_genomic_format_output_type(file_path):
+    """Test whether the list of genomic probes corresponds to the expected shape and list of genomic probes"""
     seq_genomic_output_0 = df.seq_genomic_format(file_path["exemple_genomic_seq"])[0]
     assert isinstance(seq_genomic_output_0, list)
     assert isinstance(seq_genomic_output_0[0], int)

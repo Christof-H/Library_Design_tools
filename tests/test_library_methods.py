@@ -9,7 +9,7 @@ from models.locus import Locus
 def parameters():
     # Set parameters for Library instantiation
     parameters = {
-        "chromosome_file": "ch3L.bed",
+        "chromosome_file": "chr3L.bed",
         "start_lib": 8500,
         "nbr_loci_total": 5,
         "max_diff_percent": 10,
@@ -20,7 +20,7 @@ def parameters():
 
 @pytest.fixture
 def sequences():
-    # design sequence randomly with coordinates
+    # design seq_probe sequences randomly with coordinates
     start_seq = list(range(8000, 80000, 50))
     end_seq = list(range(8030, 80030, 50))
     seq = [

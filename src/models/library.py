@@ -1,5 +1,6 @@
 import random
 import copy
+import re
 
 from models.locus import Locus
 
@@ -7,12 +8,14 @@ from models.locus import Locus
 class Library:
 
     def __init__(self, parameters: dict[str, str | int]) -> None:
-        self.chromosome_name = parameters["chromosome_file"].split(".")[0]
         self.start_lib = parameters["start_lib"]
         self.nbr_loci_total = parameters["nbr_loci_total"]
         self.max_diff_percent = parameters["max_diff_percent"]
         self.design_type = parameters["design_type"]
         self.loci_list = None
+
+        match = re.match(r"(chr\w+)\.bed$", parameters["chromosome_file"])
+        self.chromosome_name = match.group(1)
 
     def add_locus(self, locus: Locus):
         """add a locus in the Locus collection (total_loci)
