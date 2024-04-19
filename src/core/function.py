@@ -2,7 +2,26 @@ import matplotlib.pyplot as plt
 from pathlib import Path
 
 
-def display_locus_info(
+def print_dashline() -> None:
+    """print a dash line"""
+    print("-" * 70)
+
+
+def print_sample(
+    list_seq_genomic: list[int, int, str],
+    bcd_rt_list: list[list[str]],
+    primer_univ_list: dict[str, list[str]],
+) -> None:
+    print_dashline()
+    print("list_seq_genomic =", list_seq_genomic[0])
+    print_dashline()
+    print("bcd_RT =", bcd_rt_list[:2])
+    print_dashline()
+    print("primer_univ = ", "primer1 =", primer_univ_list["primer1"])
+    print_dashline()
+
+
+def graph_locus_info(
     list_info_to_plot: list[int],
     folder: Path,
     design_type: str,
