@@ -25,8 +25,8 @@ def parse_arguments(command_line=None) -> argparse.Namespace:
     parser = ArgumentParser()
 
     parser.add_argument(
-        "-ng",
-        "--nogui",
+        "-c",
+        "--cli",
         action="store_false",
         help="if the option is not specified, the program will launch a graphical user interface",
     )
