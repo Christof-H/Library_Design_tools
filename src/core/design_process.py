@@ -9,7 +9,7 @@ from models.locus import Locus
 from models.library import Library
 
 
-def lib_design(json_path: Path, output_folder: Path, src_folder: Path) -> None:
+def design_process(json_path: Path, output_folder: Path, src_folder: Path) -> None:
     """All process to design a librairy from parameters
 
     Args:

@@ -30,7 +30,7 @@ universal primers.
 from pathlib import Path
 
 from core.args import parse_arguments, check_args
-from core.lib_design import lib_design
+from core.design_process import design_process
 
 
 def main():
@@ -44,13 +44,12 @@ def main():
     args = parse_arguments()
     check_args(args)
 
-    if not args.nogui:
+    if not args.cli:
         json_path = args.parameters
         output_folder = args.output
-        lib_design(json_path, output_folder, src_folder)
-        print("Lancement du design avec CLI")
+        design_process(json_path, output_folder, src_folder)
     else:
-        # gui_design(json_path, output_folder, src_folder)
+        # gui_design(src_folder)
         print("Lancement du design avec GUI")
 
 
