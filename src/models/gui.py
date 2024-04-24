@@ -226,6 +226,48 @@ def main_gui():
     )
     #                                   Text labels
     #######################################################################################
+    label_design_strategy = my_gui.create_label(
+        labelframe_param,
+        text="Library strategy design :",
+        column=1,
+        row=0,
+        sticky=tk.W,
+    )
+    label_labelling_strategy = my_gui.create_label(
+        labelframe_param,
+        text="Labelling strategy :",
+        column=1,
+        row=3,
+        sticky=tk.W,
+    )
+    label_nbr_rt = my_gui.create_label(
+        labelframe_param,
+        text="Number RTs or barcodes by probe :",
+        column=1,
+        row=6,
+        sticky=tk.W,
+    )
+    label_nbr_probe = my_gui.create_label(
+        labelframe_param,
+        text="Number of probes by locus :",
+        column=4,
+        row=0,
+        sticky=tk.W,
+    )
+    label_loci = my_gui.create_label(
+        labelframe_param,
+        text="Number of total loci :",
+        column=4,
+        row=1,
+        sticky=tk.W,
+    )
+    label_lib_start = my_gui.create_label(
+        labelframe_param,
+        text="Library starting coordinates (in bp) :",
+        column=4,
+        row=2,
+        sticky=tk.W,
+    )
 
     my_gui.mainloop()
 
