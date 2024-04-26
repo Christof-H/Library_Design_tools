@@ -34,11 +34,17 @@ class Interface(tk.Tk):
         self.notebook.add(tab, text=title)
         return tab
 
-    def create_labelframe(self, parent, text, height):
-        labelframe = tk.LabelFrame(
-            master=parent, text=text, width=self.width, height=height
+    def create_labelframe(self, parent, text, column, row, columnspan):
+        labelframe = tk.LabelFrame(master=parent, text=text, width=self.width)
+        # labelframe.pack(pady=10, padx=20, fill="both")
+        labelframe.grid(
+            column=column,
+            row=row,
+            columnspan=columnspan,
+            pady=10,
+            padx=20,
+            sticky=tk.EW,
         )
-        labelframe.pack(pady=10, padx=20, fill="both")
         return labelframe
 
     def create_label_img(self, master, image_path, resize_rate, column, row, padx=None):
@@ -48,9 +54,11 @@ class Interface(tk.Tk):
         label_img.grid(column=column, row=row, padx=padx)
         return label_img, img_resized
 
-    def create_label(self, master, text, column, row, sticky, pady=5, padx=5):
+    def create_label(
+        self, master, text, column, row, sticky, pady=5, padx=5, columnspan=None
+    ):
         label = tk.Label(master=master, text=text, pady=pady, padx=padx)
-        label.grid(sticky=sticky, column=column, row=row)
+        label.grid(sticky=sticky, column=column, row=row, columnspan=columnspan)
         return label
 
     def create_enty(
@@ -120,6 +128,7 @@ class Interface(tk.Tk):
         textvariable,
         column,
         row,
+        columnspan=None,
         width=None,
         pady=None,
         padx=None,
@@ -128,5 +137,21 @@ class Interface(tk.Tk):
         combobox = ttk.Combobox(
             master=master, values=values, textvariable=textvariable, width=width
         )
-        combobox.grid(column=column, row=row, pady=pady, padx=padx, sticky=sticky)
+        combobox.grid(
+            column=column,
+            row=row,
+            columnspan=columnspan,
+            pady=pady,
+            padx=padx,
+            sticky=sticky,
+        )
         return combobox
+
+    def create_frame(self, master, column, row, width=None, height=None):
+        frame = tk.Frame(
+            master=master,
+            width=width,
+            height=height,
+        )
+        frame.grid(column=column, row=row)
+        return frame

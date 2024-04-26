@@ -17,12 +17,28 @@ def main_gui():
     #######################################################################################
     #               creating of the different Labelframe in the Parameters tab
     #######################################################################################
+    # for i in range(6):
+    #     tab_param.columnconfigure(i, weight=1)
+
     labelframe_file = my_gui.create_labelframe(
-        parent=tab_param, text="Files/Folders", height=200
+        parent=tab_param,
+        text="Files/Folders",
+        column=0,
+        row=0,
+        columnspan=6,
     )
     labelframe_param = my_gui.create_labelframe(
-        parent=tab_param, text="Library parameters", height=400
+        parent=tab_param,
+        text="Library parameters",
+        column=0,
+        row=1,
+        columnspan=6,
     )
+    button_exit = my_gui.create_button(master=tab_param, text="Exit", column=5, row=2)
+    button_start_design = my_gui.create_button(
+        master=tab_param, text="Start Libray Design", column=1, row=2
+    )
+
     #######################################################################################
     #                           File/Folder LabelFrame
     #######################################################################################
@@ -157,7 +173,7 @@ def main_gui():
         master=labelframe_param,
         image_path="../resources/info.png",
         resize_rate=4,
-        column=3,
+        column=4,
         row=0,
         padx=8,
     )
@@ -165,7 +181,7 @@ def main_gui():
         master=labelframe_param,
         image_path="../resources/info.png",
         resize_rate=4,
-        column=3,
+        column=4,
         row=1,
         padx=8,
     )
@@ -173,7 +189,7 @@ def main_gui():
         master=labelframe_param,
         image_path="../resources/info.png",
         resize_rate=4,
-        column=3,
+        column=4,
         row=2,
         padx=8,
     )
@@ -181,7 +197,7 @@ def main_gui():
         master=labelframe_param,
         image_path="../resources/info.png",
         resize_rate=4,
-        column=3,
+        column=4,
         row=3,
         padx=8,
     )
@@ -212,24 +228,30 @@ def main_gui():
     label_nbr_probe = my_gui.create_label(
         labelframe_param,
         text="Number of probes by locus :",
-        column=4,
+        columnspan=2,
+        column=5,
         row=0,
         sticky=tk.W,
     )
     label_loci = my_gui.create_label(
         labelframe_param,
         text="Number of total loci :",
-        column=4,
+        column=5,
         row=1,
         sticky=tk.W,
     )
     label_lib_start = my_gui.create_label(
         labelframe_param,
         text="Library starting coordinates (in bp) :",
-        column=4,
+        column=5,
         row=2,
+        columnspan=3,
         sticky=tk.W,
     )
+    # --------------------------------------------------------------------------------------
+    #                   Separator (Library parameters LabelFrame)
+    # --------------------------------------------------------------------------------------
+    separator = my_gui.create_frame(master=labelframe_param, column=3, row=0, width=80)
     # --------------------------------------------------------------------------------------
     #                  Radio button  (Library parameters LabelFrame)
     # --------------------------------------------------------------------------------------
@@ -259,7 +281,7 @@ def main_gui():
     rts_bcd = tk.StringVar()
     radio_labelling_rts = my_gui.create_radiobutton(
         master=labelframe_param,
-        text="direct labelling (use of Readout probes)",
+        text="direct labelling (use of RTs)",
         variable=rts_bcd,
         value="List_RT.csv",
         column=1,
@@ -281,24 +303,28 @@ def main_gui():
     # --------------------------------------------------------------------------------------
     #                   Entries (Library parameters LabelFrame)
     # --------------------------------------------------------------------------------------
+    # label for this entry = according to locus size (in bp)
     entry_locus_size = my_gui.create_enty(
         master=labelframe_param, width=5, column=2, row=1, sticky=tk.W
     )
     entry_locus_size.insert(0, 3.5)
 
+    # label for this entry = Number of probes by locus
     entry_nbr_probes_by_locus = my_gui.create_enty(
-        master=labelframe_param, width=5, column=5, row=0, sticky=tk.W
+        master=labelframe_param, width=5, column=7, row=0, sticky=tk.W
     )
     entry_nbr_probes_by_locus.insert(0, 100)
 
+    # label for this entry = Library starting coordinates (in bp)
     entry_lib_starting = my_gui.create_enty(
-        master=labelframe_param, width=12, column=5, row=2, sticky=tk.W
+        master=labelframe_param, width=12, column=8, row=2, sticky=tk.W
     )
-    entry_lib_starting.insert(0, 8_800_000)
+    entry_lib_starting.insert(0, "8_800_000")
 
     # --------------------------------------------------------------------------------------
     #                      Spin boxes (File/Folder LabelFrame)
     # --------------------------------------------------------------------------------------
+    # label for this spinbox = Number RTs or barcodes by probes
     nbr_rt_bcd = tk.IntVar()
     nbr_rt_bcd.set(3)
     spinbox_nbr_rt_bcd = my_gui.create_spinbox(
@@ -310,20 +336,21 @@ def main_gui():
         row=6,
         width=3,
     )
+    # label for this spinbox = Number of total loci
     nbr_loci = tk.IntVar()
     nbr_loci.set(20)
-    spinbox_nbr_rt_bcd = my_gui.create_spinbox(
+    spinbox_nbr_loci = my_gui.create_spinbox(
         master=labelframe_param,
         from_=1,
         to=50,
         textvariable=nbr_loci,
-        column=5,
+        column=6,
         row=1,
         width=5,
     )
 
     # --------------------------------------------------------------------------------------
-    #                      Comboboxe (File/Folder LabelFrame)
+    #                      Combobox (File/Folder LabelFrame)
     # --------------------------------------------------------------------------------------
     lis_univ_primer = ["primer1", "primer2", "primer3"]
     univ_primer = tk.StringVar()
@@ -332,7 +359,8 @@ def main_gui():
         values=lis_univ_primer,
         textvariable=univ_primer,
         width=40,
-        column=4,
+        columnspan=4,
+        column=5,
         row=3,
         sticky=tk.W,
     )
