@@ -117,6 +117,8 @@ def main_gui():
     # --------------------------------------------------------------------------------------
     #                      Entries (File/Folder LabelFrame)
     # --------------------------------------------------------------------------------------
+    all_widgets = {}
+
     # Entry for inputs parameters :
     entry_input_param = my_gui.create_entry(
         master=labelframe_file, width=50, column=2, row=0
@@ -157,7 +159,12 @@ def main_gui():
 
     # Button to load and fill input parameters in the different entries:
     button_load_param = my_gui.create_button(
-        labelframe_file, text="Load parameters", column=4, row=0, padx=10
+        labelframe_file,
+        text="Load parameters",
+        column=4,
+        row=0,
+        padx=10,
+        command=partial(gf.button_load_parameters, entry_input_param),
     )
 
     # Button to choose chromosome file (filedialog) :
