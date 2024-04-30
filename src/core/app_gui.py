@@ -1,6 +1,8 @@
 import tkinter as tk
+from functools import partial
 
 from models.interface import Interface
+import gui_function as gf
 
 
 def main_gui():
@@ -17,8 +19,6 @@ def main_gui():
     #######################################################################################
     #               creating of the different Labelframe in the Parameters tab
     #######################################################################################
-    # for i in range(6):
-    #     tab_param.columnconfigure(i, weight=1)
 
     labelframe_file = my_gui.create_labelframe(
         parent=tab_param,
@@ -34,7 +34,9 @@ def main_gui():
         row=1,
         columnspan=6,
     )
-    button_exit = my_gui.create_button(master=tab_param, text="Exit", column=5, row=2)
+    button_exit = my_gui.create_button(
+        master=tab_param, text="Exit", column=5, row=2, command=my_gui.destroy
+    )
     button_start_design = my_gui.create_button(
         master=tab_param, text="Start Libray Design", column=1, row=2
     )
@@ -115,29 +117,70 @@ def main_gui():
     # --------------------------------------------------------------------------------------
     #                      Entries (File/Folder LabelFrame)
     # --------------------------------------------------------------------------------------
-    entry_input = my_gui.create_enty(master=labelframe_file, width=50, column=2, row=0)
-    entry_chr_folder = my_gui.create_enty(
+    # Entry for inputs parameters :
+    entry_input_param = my_gui.create_entry(
+        master=labelframe_file, width=50, column=2, row=0
+    )
+    entry_input_param.config(state=tk.DISABLED)
+
+    # Entry for chromosome file path :
+    entry_chr_file = my_gui.create_entry(
         master=labelframe_file, width=50, column=2, row=1
     )
-    entry_chr_name = my_gui.create_enty(
+    entry_chr_file.config(state=tk.DISABLED)
+
+    # Entry for chromosome file name
+    entry_chr_name = my_gui.create_entry(
         master=labelframe_file, width=20, column=2, row=2, sticky=tk.W
     )
-    entry_output = my_gui.create_enty(master=labelframe_file, width=50, column=2, row=3)
+    entry_chr_name.config(state=tk.DISABLED)
+
+    # Entry for output folder path
+    entry_output = my_gui.create_entry(
+        master=labelframe_file, width=50, column=2, row=3
+    )
+    entry_output.config(state=tk.DISABLED)
 
     # --------------------------------------------------------------------------------------
     #                      Buttons (File/Folder LabelFrame)
     # --------------------------------------------------------------------------------------
+    # Button to choose input parameters file (filedialog) :
     button_open_file = my_gui.create_button(
-        labelframe_file, text="Open file", column=3, row=0, padx=10, sticky=tk.EW
+        labelframe_file,
+        text="Open file",
+        column=3,
+        row=0,
+        padx=10,
+        sticky=tk.EW,
+        command=partial(gf.open_file_dialog, entry_input_param),
     )
+
+    # Button to load and fill input parameters in the different entries:
     button_load_param = my_gui.create_button(
         labelframe_file, text="Load parameters", column=4, row=0, padx=10
     )
-    button_load_param = my_gui.create_button(
-        labelframe_file, text="Choose file", column=3, row=1, padx=10, sticky=tk.EW
+
+    # Button to choose chromosome file (filedialog) :
+    button_chr_path = my_gui.create_button(
+        labelframe_file,
+        text="Choose file",
+        column=3,
+        row=1,
+        padx=10,
+        sticky=tk.EW,
+        command=partial(
+            gf.open_dialog_display_chr_name, entry_chr_file, entry_chr_name
+        ),
     )
+
+    # Button to choose output folder to save outputs (filedialog) :
     button_output = my_gui.create_button(
-        labelframe_file, text="Choose folder", column=3, row=3, padx=10
+        labelframe_file,
+        text="Choose folder",
+        column=3,
+        row=3,
+        padx=10,
+        command=partial(gf.open_folder_dialog, entry_output),
     )
     #######################################################################################
     #                       Library parameters LabelFrame
@@ -304,19 +347,19 @@ def main_gui():
     #                   Entries (Library parameters LabelFrame)
     # --------------------------------------------------------------------------------------
     # label for this entry = according to locus size (in bp)
-    entry_locus_size = my_gui.create_enty(
+    entry_locus_size = my_gui.create_entry(
         master=labelframe_param, width=5, column=2, row=1, sticky=tk.W
     )
     entry_locus_size.insert(0, 3.5)
 
     # label for this entry = Number of probes by locus
-    entry_nbr_probes_by_locus = my_gui.create_enty(
+    entry_nbr_probes_by_locus = my_gui.create_entry(
         master=labelframe_param, width=5, column=7, row=0, sticky=tk.W
     )
     entry_nbr_probes_by_locus.insert(0, 100)
 
     # label for this entry = Library starting coordinates (in bp)
-    entry_lib_starting = my_gui.create_enty(
+    entry_lib_starting = my_gui.create_entry(
         master=labelframe_param, width=12, column=8, row=2, sticky=tk.W
     )
     entry_lib_starting.insert(0, "8_800_000")

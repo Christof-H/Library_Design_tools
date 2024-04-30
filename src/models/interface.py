@@ -3,6 +3,7 @@ from tkinter import ttk
 
 
 class Interface(tk.Tk):
+    # TODO : add docstring for the Interface class
     def __init__(
         self,
         dim_width=500,
@@ -25,16 +26,19 @@ class Interface(tk.Tk):
             self.notebook = None
 
     def create_notebook(self):
+        # TODO : add docstring for this method and input/output type
         self.notebook = ttk.Notebook(self)
         self.notebook.pack(fill="both", expand=True)
 
     def create_frame_in_notebook(self, title):
+        # TODO : add docstring for this method and input/output type
         tab = ttk.Frame(master=self.notebook, width=self.width, height=self.height)
         tab.pack(fill="both", expand=True)
         self.notebook.add(tab, text=title)
         return tab
 
     def create_labelframe(self, parent, text, column, row, columnspan):
+        # TODO : add docstring for this method and input/output type
         labelframe = tk.LabelFrame(master=parent, text=text, width=self.width)
         # labelframe.pack(pady=10, padx=20, fill="both")
         labelframe.grid(
@@ -48,6 +52,7 @@ class Interface(tk.Tk):
         return labelframe
 
     def create_label_img(self, master, image_path, resize_rate, column, row, padx=None):
+        # TODO : add docstring for this method and input/output type
         img = tk.PhotoImage(file=image_path)
         img_resized = img.subsample(resize_rate)
         label_img = tk.Label(master=master, image=img_resized)
@@ -57,20 +62,31 @@ class Interface(tk.Tk):
     def create_label(
         self, master, text, column, row, sticky, pady=5, padx=5, columnspan=None
     ):
+        # TODO : add docstring for this method and input/output type
         label = tk.Label(master=master, text=text, pady=pady, padx=padx)
         label.grid(sticky=sticky, column=column, row=row, columnspan=columnspan)
         return label
 
-    def create_enty(
-        self, master, width, column, row, pady=None, padx=None, sticky=None
+    def create_entry(
+        self,
+        master,
+        width,
+        column,
+        row,
+        pady=None,
+        padx=None,
+        sticky=None,
+        textvariable=None,
     ):
-        input = tk.Entry(master=master, width=width, justify=tk.RIGHT)
+        # TODO : add docstring for this method and input/output type
+        input = tk.Entry(master=master, width=width, textvariable=textvariable)
         input.grid(column=column, row=row, pady=pady, padx=padx, sticky=sticky)
         return input
 
     def create_button(
         self, master, text, column, row, pady=None, padx=None, sticky=None, command=None
     ):
+        # TODO : add docstring for this method and input/output type
         button = tk.Button(master=master, text=text, command=command)
         button.grid(column=column, row=row, pady=pady, padx=padx, sticky=sticky)
         return button
@@ -87,6 +103,7 @@ class Interface(tk.Tk):
         padx=None,
         sticky=None,
     ):
+        # TODO : add docstring for this method and input/output type
         radiobutton = tk.Radiobutton(
             master=master, text=text, variable=variable, value=value
         )
@@ -108,6 +125,7 @@ class Interface(tk.Tk):
         sticky=None,
         command=None,
     ):
+        # TODO : add docstring for this method and input/output type
         spinbox = tk.Spinbox(
             master=master,
             from_=from_,
@@ -134,6 +152,7 @@ class Interface(tk.Tk):
         padx=None,
         sticky=None,
     ):
+        # TODO : add docstring for this method and input/output type
         combobox = ttk.Combobox(
             master=master, values=values, textvariable=textvariable, width=width
         )
@@ -153,5 +172,6 @@ class Interface(tk.Tk):
             width=width,
             height=height,
         )
+        # TODO : add docstring for this method and input/output type
         frame.grid(column=column, row=row)
         return frame
