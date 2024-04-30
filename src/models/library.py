@@ -5,6 +5,12 @@ import re
 from models.locus import Locus
 
 
+def recover_chr_name(chr_file_path):
+    match = re.match(r"\S*(chr\w+)\.bed$", chr_file_path)
+    if match:
+        return match.group(1)
+
+
 class Library:
 
     def __init__(self, parameters: dict[str, str | int]) -> None:
@@ -14,8 +20,7 @@ class Library:
         self.design_type = parameters["design_type"]
         self.loci_list = None
 
-        match = re.match(r"(chr\w+)\.bed$", parameters["chromosome_file"])
-        self.chromosome_name = match.group(1)
+        self.chromosome_name = recover_chr_name(parameters["chromosome_file"])
 
     def add_locus(self, locus: Locus):
         """add a locus in the Locus collection (total_loci)
