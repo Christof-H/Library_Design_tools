@@ -6,6 +6,7 @@ from pathlib import Path
 from tkinter import filedialog
 
 from models.library import recover_chr_name
+import data_function as df
 
 
 def erase_entry(entry: tk.Entry):
@@ -42,3 +43,26 @@ def open_folder_dialog(entry: tk.Entry):
         erase_entry(entry)
         entry.insert(0, folder_name)
         entry.config(state=tk.DISABLED)
+
+
+def button_load_parameters(entry: tk.Entry):
+    src_folder_path = Path(__file__).absolute().parent
+    parameters = {}
+    if entry.get():
+        param_path = Path(entry.get())
+        parameters = df.load_parameters(param_path, src_folder_path)
+        print(parameters)
+    return parameters
+
+
+def fill_entry_param(entry: tk.Entry, input):
+    pass
+
+
+def recover_all_parameters():
+    pass
+
+
+def check_all_settings(entries_dic):
+    """Return True if all parameters have good type expected, else return False with a pop-up error window"""
+    pass
