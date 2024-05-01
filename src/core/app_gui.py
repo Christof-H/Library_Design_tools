@@ -6,6 +6,11 @@ import gui_function as gf
 
 
 def main_gui():
+    # creating a dictionary to save all widgets to store and recover variable user parameters
+    all_widgets = {}
+    #creating a dictionary to strores parameters
+    input_parameters = {}
+
     # creating the main window with a Notebook
     my_gui = Interface(tabs=True, dim_width=1000, dim_height=470)
 
@@ -97,6 +102,8 @@ def main_gui():
         row=1,
         sticky=tk.W,
     )
+
+
     label_chr_name = my_gui.create_label(
         labelframe_file,
         text="Chromosome file name :",
@@ -113,11 +120,9 @@ def main_gui():
         pady=5,
         sticky=tk.W,
     )
-
     # --------------------------------------------------------------------------------------
     #                      Entries (File/Folder LabelFrame)
     # --------------------------------------------------------------------------------------
-    all_widgets = {}
 
     # Entry for inputs parameters :
     entry_input_param = my_gui.create_entry(
@@ -143,6 +148,11 @@ def main_gui():
     )
     entry_output.config(state=tk.DISABLED)
 
+    # Add different entries to the widget dictionary :
+    all_widgets.update({'genomic_path': entry_chr_file})
+    all_widgets.update({'chromosome_file': entry_chr_name})
+    all_widgets.update({'output_folder': entry_output})
+
     # --------------------------------------------------------------------------------------
     #                      Buttons (File/Folder LabelFrame)
     # --------------------------------------------------------------------------------------
@@ -164,7 +174,7 @@ def main_gui():
         column=4,
         row=0,
         padx=10,
-        command=partial(gf.button_load_parameters, entry_input_param),
+        command=partial(gf.button_load_parameters, entry_input_param, input_parameters),
     )
 
     # Button to choose chromosome file (filedialog) :
@@ -189,6 +199,8 @@ def main_gui():
         padx=10,
         command=partial(gf.open_folder_dialog, entry_output),
     )
+
+
     #######################################################################################
     #                       Library parameters LabelFrame
     #######################################################################################
@@ -349,6 +361,11 @@ def main_gui():
         pady=5,
         sticky=tk.W,
     )
+    rts_bcd.set('List_RT.csv')
+
+    # Add different radio button variables to the widget dictionary :
+    all_widgets.update({'design_type': design_type})
+    all_widgets.update({'bcd_rt_file': rts_bcd})
 
     # --------------------------------------------------------------------------------------
     #                   Entries (Library parameters LabelFrame)
@@ -370,6 +387,11 @@ def main_gui():
         master=labelframe_param, width=12, column=8, row=2, sticky=tk.W
     )
     entry_lib_starting.insert(0, "8_800_000")
+
+    # Add different entries to the widget dictionary :
+    all_widgets.update({'resolution': entry_locus_size})
+    all_widgets.update({'nbr_probe_by_locus': entry_nbr_probes_by_locus})
+    all_widgets.update({'start_lib': entry_lib_starting})
 
     # --------------------------------------------------------------------------------------
     #                      Spin boxes (File/Folder LabelFrame)
@@ -399,6 +421,10 @@ def main_gui():
         width=5,
     )
 
+    # Add different spinbox variables to the widget dictionary :
+    all_widgets.update({'nbr_bcd_rt_by_probe': nbr_rt_bcd})
+    all_widgets.update({'nbr_loci_total': nbr_loci})
+
     # --------------------------------------------------------------------------------------
     #                      Combobox (File/Folder LabelFrame)
     # --------------------------------------------------------------------------------------
@@ -415,6 +441,11 @@ def main_gui():
         sticky=tk.W,
     )
     univ_primer.set("Choose universal primer couple")
+
+    # Add combobox variables to the widget dictionary :
+    all_widgets.update({'primer_univ': univ_primer})
+
+
 
     my_gui.mainloop()
 
