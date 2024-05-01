@@ -46,13 +46,17 @@ def open_folder_dialog(entry: tk.Entry):
 
 
 def button_load_parameters(entry: tk.Entry):
+    # variable globale ????
     src_folder_path = Path(__file__).absolute().parent
     parameters = {}
     if entry.get():
         param_path = Path(entry.get())
-        parameters = df.load_parameters(param_path, src_folder_path)
-        print(parameters)
+        input_parameters = (df.load_parameters(param_path, src_folder_path))
+        #print(input_parameters)
     return parameters
+
+def display_univ_primers_combobox(path: Path):
+    univ_primer_dic = df.universal_primer_format(path)
 
 
 def fill_entry_param(entry: tk.Entry, input):
