@@ -9,6 +9,13 @@ from models.library import recover_chr_name
 import data_function as df
 
 
+def change_state_widget(entry: tk.Entry, var_radio_b: tk.StringVar):
+    if entry["state"] == tk.NORMAL and var_radio_b.get() == "nbr_probes":
+        entry.config(state=tk.DISABLED)
+    else:
+        entry.config(state=tk.NORMAL)
+
+
 def erase_entry(entry: tk.Entry):
     if entry.get():
         entry.delete(0, len(entry.get()))
@@ -45,26 +52,50 @@ def open_folder_dialog(entry: tk.Entry):
         entry.config(state=tk.DISABLED)
 
 
-def button_load_parameters(entry: tk.Entry):
-    # variable globale ????
-    src_folder_path = Path(__file__).absolute().parent
-    parameters = {}
-    if entry.get():
-        param_path = Path(entry.get())
-        input_parameters = (df.load_parameters(param_path, src_folder_path))
-        #print(input_parameters)
-    return parameters
-
 def display_univ_primers_combobox(path: Path):
     univ_primer_dic = df.universal_primer_format(path)
 
 
-def fill_entry_param(entry: tk.Entry, input):
-    pass
+def button_load_parameters(
+    entry: tk.Entry, entries_dic: dict, values_widgets_dic: dict, input_parameters:
+) -> None:
+    src_folder_path = Path(__file__).absolute().parent
+    if entry.get():
+        param_path = Path(entry.get())
+        input_parameters = df.load_parameters(param_path, src_folder_path)
+        print(input_parameters)
+        fill_entry_param(entry_dic=entries_dic, parameters=input_parameters)
+        fill_values_widgets(
+            values_widget_dic=values_widgets_dic, parameters=input_parameters
+        )
+    else:
+        print("popup message error")
 
 
-def recover_all_parameters():
-    pass
+def fill_entry_param(entry_dic: dict, parameters: dict):
+    for entry_name, entry in entry_dic.items():
+        if entry_name == "output_folder" and not entry.get():
+            parent_folder = (
+                Path(__file__).absolute().parents[2].joinpath("Library_Design_Results")
+            )
+            entry.config(state=tk.NORMAL)
+            entry.insert(0, str(parent_folder))
+            entry.config(state=tk.DISABLED)
+        elif parameters.get(entry_name):
+            entry.config(state=tk.NORMAL)
+            erase_entry(entry=entry)
+            entry.insert(0, parameters.get(entry_name))
+            entry.config(state=tk.DISABLED)
+
+
+def fill_values_widgets(values_widget_dic: dict, parameters: dict):
+    for str_var_name, var_widget in values_widget_dic.items():
+        if parameters.get(str_var_name):
+            var_widget.set(parameters.get(str_var_name))
+
+
+def recover_all_parameters(input_parameters, entries_widgets, var_widgets):
+    print("new parameters", input_parameters)
 
 
 def check_all_settings(entries_dic):
