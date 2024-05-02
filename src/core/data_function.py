@@ -1,10 +1,13 @@
 import json
+from json import JSONDecodeError
 from pathlib import Path
 
 from models.library import Library
 
 
 def load_parameters(json_path: Path, src_folder: Path) -> dict[str, str | int | Path]:
+    # TODO: faire un try/except au cas ou un paramètre n'est pas trouvé
+    # TODO: fair un try/except au cas ou fichier donné n'est pas un fichier json
     """Load parameters from parameter json file
 
     Args:
@@ -19,7 +22,11 @@ def load_parameters(json_path: Path, src_folder: Path) -> dict[str, str | int | 
     primer_univ_file = "Primer_univ.csv"
 
     with open(json_path, mode="r", encoding="UTF-8") as file:
-        input_param = json.load(file)
+        try:
+            input_param = json.load(file)
+        except JSONDecodeError:
+            print("The parameter file is not a Json file")
+
         input_param["end_lib"] = input_param["start_lib"] + (
             input_param["nbr_loci_total"] * input_param["resolution"]
         )

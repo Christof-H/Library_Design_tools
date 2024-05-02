@@ -102,10 +102,11 @@ class Interface(tk.Tk):
         pady=None,
         padx=None,
         sticky=None,
+        command=None,
     ):
         # TODO : add docstring for this method and input/output type
         radiobutton = tk.Radiobutton(
-            master=master, text=text, variable=variable, value=value
+            master=master, text=text, variable=variable, value=value, command=command
         )
         radiobutton.grid(column=column, row=row, pady=pady, padx=padx, sticky=sticky)
         return radiobutton

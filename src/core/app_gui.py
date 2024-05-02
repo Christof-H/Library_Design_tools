@@ -6,9 +6,11 @@ import gui_function as gf
 
 
 def main_gui():
-    # creating a dictionary to save all widgets to store and recover variable user parameters
-    all_widgets = {}
-    #creating a dictionary to strores parameters
+    # creating a dictionary to save all Entry widgets to store and recover user parameters
+    entries_widgets = {}
+    # creating a dictionary to save all values widgets to store and recover variable user parameters
+    var_widgets = {}
+    # creating a dictionary to stores parameters
     input_parameters = {}
 
     # creating the main window with a Notebook
@@ -43,7 +45,13 @@ def main_gui():
         master=tab_param, text="Exit", column=5, row=2, command=my_gui.destroy
     )
     button_start_design = my_gui.create_button(
-        master=tab_param, text="Start Libray Design", column=1, row=2
+        master=tab_param,
+        text="Start Libray Design",
+        column=1,
+        row=2,
+        command=partial(
+            gf.recover_all_parameters, input_parameters, entries_widgets, var_widgets
+        ),
     )
 
     #######################################################################################
@@ -103,7 +111,6 @@ def main_gui():
         sticky=tk.W,
     )
 
-
     label_chr_name = my_gui.create_label(
         labelframe_file,
         text="Chromosome file name :",
@@ -149,9 +156,9 @@ def main_gui():
     entry_output.config(state=tk.DISABLED)
 
     # Add different entries to the widget dictionary :
-    all_widgets.update({'genomic_path': entry_chr_file})
-    all_widgets.update({'chromosome_file': entry_chr_name})
-    all_widgets.update({'output_folder': entry_output})
+    entries_widgets.update({"genomic_path": entry_chr_file})
+    entries_widgets.update({"chromosome_file": entry_chr_name})
+    entries_widgets.update({"output_folder": entry_output})
 
     # --------------------------------------------------------------------------------------
     #                      Buttons (File/Folder LabelFrame)
@@ -174,7 +181,9 @@ def main_gui():
         column=4,
         row=0,
         padx=10,
-        command=partial(gf.button_load_parameters, entry_input_param, input_parameters),
+        command=partial(
+            gf.button_load_parameters, entry_input_param, entries_widgets, var_widgets
+        ),
     )
 
     # Button to choose chromosome file (filedialog) :
@@ -199,7 +208,6 @@ def main_gui():
         padx=10,
         command=partial(gf.open_folder_dialog, entry_output),
     )
-
 
     #######################################################################################
     #                       Library parameters LabelFrame
@@ -315,18 +323,63 @@ def main_gui():
     # --------------------------------------------------------------------------------------
     separator = my_gui.create_frame(master=labelframe_param, column=3, row=0, width=80)
     # --------------------------------------------------------------------------------------
+    #                   Entries (Library parameters LabelFrame)
+    # --------------------------------------------------------------------------------------
+    # label for this entry = according to locus size (in bp)
+    locus_size = tk.DoubleVar()
+    entry_locus_size = my_gui.create_entry(
+        master=labelframe_param,
+        textvariable=locus_size,
+        width=6,
+        column=2,
+        row=1,
+        sticky=tk.W,
+    )
+    locus_size.set(20000)
+
+    # label for this entry = Number of probes by locus
+    nbr_probes = tk.IntVar()
+    entry_nbr_probes_by_locus = my_gui.create_entry(
+        master=labelframe_param,
+        textvariable=nbr_probes,
+        width=5,
+        column=7,
+        row=0,
+        sticky=tk.W,
+    )
+    nbr_probes.set(100)
+
+    # label for this entry = Library starting coordinates (in bp)
+    start_lib = tk.IntVar()
+    entry_lib_starting = my_gui.create_entry(
+        master=labelframe_param,
+        textvariable=start_lib,
+        width=12,
+        column=8,
+        row=2,
+        sticky=tk.W,
+    )
+    start_lib.set(8_800_000)
+
+    # Add different entries to the widget dictionary :
+    var_widgets.update({"resolution": locus_size})
+    var_widgets.update({"nbr_probe_by_locus": nbr_probes})
+    var_widgets.update({"start_lib": start_lib})
+
+    # --------------------------------------------------------------------------------------
     #                  Radio button  (Library parameters LabelFrame)
     # --------------------------------------------------------------------------------------
     design_type = tk.StringVar()
     radio_locus_size = my_gui.create_radiobutton(
         master=labelframe_param,
-        text="according to locus size (in kb) :",
+        text="according to locus size (in bp) :",
         variable=design_type,
         value="locus_length",
         column=1,
         row=1,
         pady=5,
         sticky=tk.W,
+        command=partial(gf.change_state_widget, entry_locus_size, design_type),
     )
     radio_nbr_probes = my_gui.create_radiobutton(
         master=labelframe_param,
@@ -337,6 +390,7 @@ def main_gui():
         row=2,
         pady=5,
         sticky=tk.W,
+        command=partial(gf.change_state_widget, entry_locus_size, design_type),
     )
     design_type.set("locus_length")
 
@@ -361,37 +415,11 @@ def main_gui():
         pady=5,
         sticky=tk.W,
     )
-    rts_bcd.set('List_RT.csv')
+    rts_bcd.set("List_RT.csv")
 
     # Add different radio button variables to the widget dictionary :
-    all_widgets.update({'design_type': design_type})
-    all_widgets.update({'bcd_rt_file': rts_bcd})
-
-    # --------------------------------------------------------------------------------------
-    #                   Entries (Library parameters LabelFrame)
-    # --------------------------------------------------------------------------------------
-    # label for this entry = according to locus size (in bp)
-    entry_locus_size = my_gui.create_entry(
-        master=labelframe_param, width=5, column=2, row=1, sticky=tk.W
-    )
-    entry_locus_size.insert(0, 3.5)
-
-    # label for this entry = Number of probes by locus
-    entry_nbr_probes_by_locus = my_gui.create_entry(
-        master=labelframe_param, width=5, column=7, row=0, sticky=tk.W
-    )
-    entry_nbr_probes_by_locus.insert(0, 100)
-
-    # label for this entry = Library starting coordinates (in bp)
-    entry_lib_starting = my_gui.create_entry(
-        master=labelframe_param, width=12, column=8, row=2, sticky=tk.W
-    )
-    entry_lib_starting.insert(0, "8_800_000")
-
-    # Add different entries to the widget dictionary :
-    all_widgets.update({'resolution': entry_locus_size})
-    all_widgets.update({'nbr_probe_by_locus': entry_nbr_probes_by_locus})
-    all_widgets.update({'start_lib': entry_lib_starting})
+    var_widgets.update({"design_type": design_type})
+    var_widgets.update({"bcd_rt_file": rts_bcd})
 
     # --------------------------------------------------------------------------------------
     #                      Spin boxes (File/Folder LabelFrame)
@@ -422,8 +450,8 @@ def main_gui():
     )
 
     # Add different spinbox variables to the widget dictionary :
-    all_widgets.update({'nbr_bcd_rt_by_probe': nbr_rt_bcd})
-    all_widgets.update({'nbr_loci_total': nbr_loci})
+    var_widgets.update({"nbr_bcd_rt_by_probe": nbr_rt_bcd})
+    var_widgets.update({"nbr_loci_total": nbr_loci})
 
     # --------------------------------------------------------------------------------------
     #                      Combobox (File/Folder LabelFrame)
@@ -443,9 +471,7 @@ def main_gui():
     univ_primer.set("Choose universal primer couple")
 
     # Add combobox variables to the widget dictionary :
-    all_widgets.update({'primer_univ': univ_primer})
-
-
+    var_widgets.update({"primer_univ": univ_primer})
 
     my_gui.mainloop()
 
