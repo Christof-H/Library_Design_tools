@@ -7,7 +7,7 @@ from pathlib import Path
 from tkinter import filedialog, messagebox
 
 from models.library import recover_chr_name
-import data_function as df
+import core.data_function as df
 
 
 def change_state_widget(entry: tk.Entry, var_radio_b: tk.StringVar):
