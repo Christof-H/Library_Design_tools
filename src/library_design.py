@@ -31,6 +31,7 @@ from pathlib import Path
 
 from core.args import parse_arguments, check_args
 from core.design_process import design_process
+from core.app_gui import main_gui
 
 
 def main():
@@ -49,8 +50,7 @@ def main():
         output_folder = args.output
         design_process(json_path, output_folder, src_folder)
     else:
-        # gui_design(src_folder)
-        print("Lancement du design avec GUI")
+        main_gui()
 
 
 if __name__ == "__main__":

@@ -1,8 +1,9 @@
 import tkinter as tk
 from functools import partial
+from pathlib import Path
 
 from models.interface import Interface
-import gui_function as gf
+import core.gui_function as gf
 
 
 def main_gui():
@@ -60,9 +61,10 @@ def main_gui():
 
     #                    info image label (File/Folder LabelFrame)
     # --------------------------------------------------------------------------------------
+    info_img_path = Path(__file__).absolute().parents[1].joinpath("resources/info.png")
     info_load_param, info_img = my_gui.create_label_img(
         master=labelframe_file,
-        image_path="../resources/info.png",
+        image_path=info_img_path,
         resize_rate=4,
         column=0,
         row=0,
@@ -70,7 +72,7 @@ def main_gui():
     )
     info_chr_folder, chr_folder_img = my_gui.create_label_img(
         master=labelframe_file,
-        image_path="../resources/info.png",
+        image_path=info_img_path,
         resize_rate=4,
         column=0,
         row=1,
@@ -78,7 +80,7 @@ def main_gui():
     )
     info_chr_name, chr_name_img = my_gui.create_label_img(
         master=labelframe_file,
-        image_path="../resources/info.png",
+        image_path=info_img_path,
         resize_rate=4,
         column=0,
         row=2,
@@ -86,7 +88,7 @@ def main_gui():
     )
     info_output, output_img = my_gui.create_label_img(
         master=labelframe_file,
-        image_path="../resources/info.png",
+        image_path=info_img_path,
         resize_rate=4,
         column=0,
         row=3,
@@ -221,7 +223,7 @@ def main_gui():
     # --------------------------------------------------------------------------------------
     info_design, info_design_img = my_gui.create_label_img(
         master=labelframe_param,
-        image_path="../resources/info.png",
+        image_path=info_img_path,
         resize_rate=4,
         column=0,
         row=0,
@@ -229,7 +231,7 @@ def main_gui():
     )
     info_labelling, info_labelling_img = my_gui.create_label_img(
         master=labelframe_param,
-        image_path="../resources/info.png",
+        image_path=info_img_path,
         resize_rate=4,
         column=0,
         row=3,
@@ -237,7 +239,7 @@ def main_gui():
     )
     info_nbr_rt, nbr_rt_img = my_gui.create_label_img(
         master=labelframe_param,
-        image_path="../resources/info.png",
+        image_path=info_img_path,
         resize_rate=4,
         column=0,
         row=6,
@@ -245,7 +247,7 @@ def main_gui():
     )
     info_nbr_probe, nbr_probe_img = my_gui.create_label_img(
         master=labelframe_param,
-        image_path="../resources/info.png",
+        image_path=info_img_path,
         resize_rate=4,
         column=4,
         row=0,
@@ -253,7 +255,7 @@ def main_gui():
     )
     info_total_loci, total_loci_img = my_gui.create_label_img(
         master=labelframe_param,
-        image_path="../resources/info.png",
+        image_path=info_img_path,
         resize_rate=4,
         column=4,
         row=1,
@@ -261,7 +263,7 @@ def main_gui():
     )
     info_lib_start, lib_start_img = my_gui.create_label_img(
         master=labelframe_param,
-        image_path="../resources/info.png",
+        image_path=info_img_path,
         resize_rate=4,
         column=4,
         row=2,
@@ -269,7 +271,7 @@ def main_gui():
     )
     info_univ_primer, univ_primer_img = my_gui.create_label_img(
         master=labelframe_param,
-        image_path="../resources/info.png",
+        image_path=info_img_path,
         resize_rate=4,
         column=4,
         row=3,
