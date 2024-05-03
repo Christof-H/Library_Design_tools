@@ -50,7 +50,7 @@ def main_gui():
         column=1,
         row=2,
         command=partial(
-            gf.recover_all_parameters, input_parameters, entries_widgets, var_widgets
+            gf.check_recover_settings, input_parameters, entries_widgets, var_widgets
         ),
     )
 
@@ -182,7 +182,11 @@ def main_gui():
         row=0,
         padx=10,
         command=partial(
-            gf.button_load_parameters, entry_input_param, entries_widgets, var_widgets
+            gf.button_load_parameters,
+            entry_input_param,
+            entries_widgets,
+            var_widgets,
+            input_parameters,
         ),
     )
 
@@ -326,7 +330,7 @@ def main_gui():
     #                   Entries (Library parameters LabelFrame)
     # --------------------------------------------------------------------------------------
     # label for this entry = according to locus size (in bp)
-    locus_size = tk.DoubleVar()
+    locus_size = tk.IntVar()
     entry_locus_size = my_gui.create_entry(
         master=labelframe_param,
         textvariable=locus_size,
