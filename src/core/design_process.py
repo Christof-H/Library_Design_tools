@@ -9,19 +9,26 @@ from models.locus import Locus
 from models.library import Library
 
 
-def design_process(json_path: Path, output_folder: Path, src_folder: Path) -> None:
+def design_process(
+    output_folder: Path, json_path: Path = None, inputs_parameters=None
+) -> None:
     """All process to design a librairy from parameters
 
     Args:
-        json_path (Path):
-            input_parameters.json path
         output_folder (Path):
             output folder path to store results files
-        src_folder (Path):
-            src folder of Library_Design_tools script
+        json_path (Path):
+            input_parameters.json path
+        inputs_parameters(dict[str, str | int | Path]):
+            dictionary containing parameters
+
     """
+    src_folder_path = Path(__file__).absolute().parents[1]
     # Retrieving parameters from the input_parameters.json file as parameters dictionary
-    parameters = df.load_parameters(json_path, src_folder)
+    if json_path:
+        parameters = df.load_parameters(json_path)
+    else:
+        parameters = inputs_parameters
 
     # ---------------------------------------------------------------------------------------------
     #                                   Creating result folder
@@ -135,7 +142,7 @@ def design_process(json_path: Path, output_folder: Path, src_folder: Path) -> No
     # ---------------------------------------------------------------------------------------------
 
     # Creation of a dated file to differentiate between the different libraries designed
-    date_now = dt.datetime.now().strftime("%Y%m%d_%H%M")
+    date_now = dt.datetime.now().strftime("%Y%m%d_%H%M%S")
     path_result_folder = result_folder.joinpath(date_now)
     path_result_folder.mkdir()
 

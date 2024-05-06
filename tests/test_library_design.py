@@ -28,7 +28,7 @@ def setup(tmp_path_factory):
     # Creation of 4 libraries based on different scenarios by iterating on input_parameters files
     for json_path in input_param_folder:
         full_path = test_folder.joinpath(json_path)
-        input_parameters = df.load_parameters(full_path, test_folder)
+        input_parameters = df.load_parameters(full_path)
 
         input_parameters["end_lib"] = input_parameters["start_lib"] + (
             input_parameters["nbr_loci_total"] * input_parameters["resolution"]

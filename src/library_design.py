@@ -36,7 +36,6 @@ from core.app_gui import main_gui
 
 def main():
     """Main function of library design script"""
-    src_folder = Path(__file__).absolute().parent
 
     # ---------------------------------------------------------------------------------------------
     #                                   CLI Arguments
@@ -46,9 +45,9 @@ def main():
     check_args(args)
 
     if not args.cli:
-        json_path = args.parameters
+        json_parameters_path = args.parameters
         output_folder = args.output
-        design_process(json_path, output_folder, src_folder)
+        design_process(output_folder=output_folder, json_path=json_parameters_path)
     else:
         main_gui()
 
