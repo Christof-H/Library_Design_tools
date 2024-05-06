@@ -14,6 +14,10 @@ def main_gui():
     # creating a dictionary to stores parameters
     input_parameters = {}
 
+    src_folder_path = Path(__file__).absolute().parents[1]
+    primer_univ_path = src_folder_path.joinpath("resources/Primer_univ.csv")
+    print(str(primer_univ_path))
+
     # creating the main window with a Notebook
     my_gui = Interface(tabs=True, dim_width=1000, dim_height=470)
 
@@ -51,7 +55,7 @@ def main_gui():
         column=1,
         row=2,
         command=partial(
-            gf.check_recover_settings, input_parameters, entries_widgets, var_widgets
+            gf.start_design, input_parameters, entries_widgets, var_widgets
         ),
     )
 
@@ -462,7 +466,7 @@ def main_gui():
     # --------------------------------------------------------------------------------------
     #                      Combobox (File/Folder LabelFrame)
     # --------------------------------------------------------------------------------------
-    lis_univ_primer = ["primer1", "primer2", "primer3"]
+    lis_univ_primer = gf.display_univ_primers_combobox(primer_univ_path)
     univ_primer = tk.StringVar()
     combo_univ_primer = my_gui.create_combobox(
         master=labelframe_param,

@@ -5,7 +5,7 @@ from pathlib import Path
 from models.library import Library
 
 
-def load_parameters(json_path: Path, src_folder: Path) -> dict[str, str | int | Path]:
+def load_parameters(json_path: Path) -> dict[str, str | int | Path]:
     # TODO: faire un try/except au cas ou un paramètre n'est pas trouvé
     # TODO: fair un try/except au cas ou fichier donné n'est pas un fichier json
     """Load parameters from parameter json file
@@ -13,13 +13,12 @@ def load_parameters(json_path: Path, src_folder: Path) -> dict[str, str | int | 
     Args:
         json_path (Path):
             File path of parameter json file
-        src_folder (Path):
-            path of the src folder script
 
     Returns:
         dict[str, str | int | Path]: dictionary containing parameters for library design
     """
     primer_univ_file = "Primer_univ.csv"
+    src_folder = Path(__file__).absolute().parents[1]
 
     with open(json_path, mode="r", encoding="UTF-8") as file:
         try:
@@ -173,6 +172,7 @@ def save_parameters(
     out_parameters["resources_path"] = out_parameters["resources_path"].as_posix()
     out_parameters["bcd_rt_path"] = out_parameters["bcd_rt_path"].as_posix()
     out_parameters["primer_univ_path"] = out_parameters["primer_univ_path"].as_posix()
+    out_parameters["output_folder"] = out_parameters["output_folder"].as_posix()
 
     path_str = path_result_folder.as_posix()
     with open(parameters_file_path, mode="w", encoding="UTF-8") as file:
