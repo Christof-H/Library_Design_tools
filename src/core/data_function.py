@@ -182,3 +182,16 @@ def save_parameters(
         json.dump(out_parameters, file, indent=4)
 
     print(f"All files concerning your library design are saved in {path_str}/")
+
+
+def recover_summary(summary_path: Path):
+    with open(file=summary_path, mode="r", encoding="utf-8") as sum_file:
+        i = 1
+        values = []
+        for line in sum_file:
+            if i == 1:
+                columns = [x for x in line.replace("\n", "").split(",")]
+                i += 1
+            else:
+                values.append([x for x in line.replace("\n", "").split(",")])
+        return columns, values
