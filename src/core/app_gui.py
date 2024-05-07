@@ -46,18 +46,6 @@ def main_gui():
         row=1,
         columnspan=6,
     )
-    button_exit = my_gui.create_button(
-        master=tab_param, text="Exit", column=5, row=2, command=my_gui.destroy
-    )
-    button_start_design = my_gui.create_button(
-        master=tab_param,
-        text="Start Libray Design",
-        column=1,
-        row=2,
-        command=partial(
-            gf.start_design, input_parameters, entries_widgets, var_widgets
-        ),
-    )
 
     #######################################################################################
     #                           File/Folder LabelFrame
@@ -482,6 +470,35 @@ def main_gui():
 
     # Add combobox variables to the widget dictionary :
     var_widgets.update({"primer_univ": univ_primer})
+
+    #######################################################################################
+    #            Creating of the different widgets in the Graphic results tab
+    #######################################################################################
+    caution_img = src_folder_path.joinpath("resources/Caution.png")
+    label_graphic = my_gui.create_label_graphic(
+        master=tab_graphic,
+        resize_rate=4,
+        image_path=caution_img,
+    )
+    #######################################################################################
+    #            Start Library Design and Exit button
+    #######################################################################################
+    button_exit = my_gui.create_button(
+        master=tab_param, text="Exit", column=5, row=2, command=my_gui.destroy
+    )
+    button_start_design = my_gui.create_button(
+        master=tab_param,
+        text="Start Libray Design",
+        column=1,
+        row=2,
+        command=partial(
+            gf.start_design,
+            parameters=input_parameters,
+            entries_widgets=entries_widgets,
+            var_widgets=var_widgets,
+            graphic_widget=label_graphic,
+        ),
+    )
 
     my_gui.mainloop()
 

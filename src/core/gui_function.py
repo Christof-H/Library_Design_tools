@@ -171,11 +171,23 @@ def check_recover_settings(parameters: dict, entries_widgets: dict, var_widgets:
                 parameters.update({var_name: primer_univ})
     return parameters
 
-def display_graphic():
-    pass
+
+#
+def display_graphic(widget: tk.Label, img_path: Path) -> None:
+    img = tk.PhotoImage(file=img_path)
+    img_zoom = img.zoom(4)
+    img_resized = img_zoom.subsample(5)
+    widget.configure(image=img_resized)
+
+    # label_img = tk.Label(master=master, image=img_resized)
+    # label_img.grid(column=column, row=row, padx=padx)
+    # Keep a reference to the photo object to avoid deletion by the garbage collector : widget.image = img
+    widget.image = img_resized
 
 
-def start_design(parameters: dict, entries_widgets: dict, var_widgets: dict) -> None:
+def start_design(
+    parameters: dict, entries_widgets: dict, var_widgets: dict, graphic_widget: tk.Label
+) -> None:
     updated_parameters = check_recover_settings(
         parameters=parameters, entries_widgets=entries_widgets, var_widgets=var_widgets
     )
@@ -183,3 +195,5 @@ def start_design(parameters: dict, entries_widgets: dict, var_widgets: dict) -> 
         output_folder=updated_parameters["output_folder"],
         inputs_parameters=updated_parameters,
     )
+    graphic_img = updated_parameters["path_result_folder"].joinpath("plot.png")
+    display_graphic(widget=graphic_widget, img_path=graphic_img)

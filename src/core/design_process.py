@@ -145,6 +145,7 @@ def design_process(
     date_now = dt.datetime.now().strftime("%Y%m%d_%H%M%S")
     path_result_folder = result_folder.joinpath(date_now)
     path_result_folder.mkdir()
+    parameters["path_result_folder"] = path_result_folder
 
     # ---------------------------------------------------------------------------------------------
     #                           Display probes/length by locus
