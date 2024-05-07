@@ -70,12 +70,16 @@ class Interface(tk.Tk):
         column,
         row,
         columnspan,
+        width,
+        height,
         resize_rate=1,
     ):
         # TODO : add docstring for this method and input/output type
         img = tk.PhotoImage(file=image_path)
         img_resized = img.subsample(resize_rate)
-        label_img = tk.Label(master=master, image=img_resized, width=967, height=419)
+        label_img = tk.Label(
+            master=master, image=img_resized, width=width, height=height
+        )
         label_img.grid(column=column, row=row, columnspan=columnspan)
         # Keep a reference to the photo object to avoid deletion by the garbage collector
         label_img.image = img_resized
