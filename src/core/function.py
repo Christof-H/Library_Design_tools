@@ -46,4 +46,3 @@ def graph_locus_info(
     plt.title(titre)
     plt.xticks(range(len(list_to_plot)), list(range(1, len(list_to_plot) + 1)))
     plt.savefig(fname=folder.joinpath("plot.png"))
-    plt.show()

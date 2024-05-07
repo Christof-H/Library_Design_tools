@@ -173,6 +173,9 @@ def save_parameters(
     out_parameters["bcd_rt_path"] = out_parameters["bcd_rt_path"].as_posix()
     out_parameters["primer_univ_path"] = out_parameters["primer_univ_path"].as_posix()
     out_parameters["output_folder"] = out_parameters["output_folder"].as_posix()
+    out_parameters["path_result_folder"] = out_parameters[
+        "path_result_folder"
+    ].as_posix()
 
     path_str = path_result_folder.as_posix()
     with open(parameters_file_path, mode="w", encoding="UTF-8") as file:

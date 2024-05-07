@@ -51,13 +51,32 @@ class Interface(tk.Tk):
         )
         return labelframe
 
-    def create_label_img(self, master, image_path, resize_rate, column, row, padx=None):
+    def create_label_img(
+        self, master, image_path, resize_rate=1, column=None, row=None, padx=None
+    ):
         # TODO : add docstring for this method and input/output type
         img = tk.PhotoImage(file=image_path)
         img_resized = img.subsample(resize_rate)
         label_img = tk.Label(master=master, image=img_resized)
         label_img.grid(column=column, row=row, padx=padx)
+        # Keep a reference to the photo object to avoid deletion by the garbage collector = return img_resized
+        # possibility to put img_resized in label_img.image : label_img.image = img_resized
         return label_img, img_resized
+
+    def create_label_graphic(
+        self,
+        master,
+        image_path,
+        resize_rate=1,
+    ):
+        # TODO : add docstring for this method and input/output type
+        img = tk.PhotoImage(file=image_path)
+        img_resized = img.subsample(resize_rate)
+        label_img = tk.Label(master=master, image=img_resized)
+        label_img.pack(side="bottom", fill="both", expand=True)
+        # Keep a reference to the photo object to avoid deletion by the garbage collector
+        label_img.image = img_resized
+        return label_img
 
     def create_label(
         self, master, text, column, row, sticky, pady=5, padx=5, columnspan=None
