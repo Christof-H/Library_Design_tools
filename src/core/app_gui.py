@@ -479,11 +479,15 @@ def main_gui():
         master=tab_graphic,
         resize_rate=4,
         image_path=caution_img,
+        column=0,
+        row=0,
+        columnspan=6,
     )
+
     #######################################################################################
-    #            Start Library Design and Exit button
+    #            Start Library Design and Exit button in parameters tab
     #######################################################################################
-    button_exit = my_gui.create_button(
+    button_exit_paramaters = my_gui.create_button(
         master=tab_param, text="Exit", column=5, row=2, command=my_gui.destroy
     )
     button_start_design = my_gui.create_button(
@@ -498,6 +502,12 @@ def main_gui():
             var_widgets=var_widgets,
             graphic_widget=label_graphic,
         ),
+    )
+    #######################################################################################
+    #            Exit button in graphic tab
+    #######################################################################################
+    button_exit_graphic = my_gui.create_button(
+        master=tab_graphic, text="Exit", column=5, row=2, command=my_gui.destroy
     )
 
     my_gui.mainloop()

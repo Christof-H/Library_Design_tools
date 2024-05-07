@@ -175,8 +175,8 @@ def check_recover_settings(parameters: dict, entries_widgets: dict, var_widgets:
 #
 def display_graphic(widget: tk.Label, img_path: Path) -> None:
     img = tk.PhotoImage(file=img_path)
-    img_zoom = img.zoom(4)
-    img_resized = img_zoom.subsample(5)
+    img_zoom = img.zoom(6)
+    img_resized = img_zoom.subsample(8)
     widget.configure(image=img_resized)
 
     # label_img = tk.Label(master=master, image=img_resized)
@@ -195,5 +195,14 @@ def start_design(
         output_folder=updated_parameters["output_folder"],
         inputs_parameters=updated_parameters,
     )
+    # displays library information in graphical form
     graphic_img = updated_parameters["path_result_folder"].joinpath("plot.png")
     display_graphic(widget=graphic_widget, img_path=graphic_img)
+
+    # recovery detailed information from the library (for board visualisation)
+    lib_summary = updated_parameters["path_result_folder"].joinpath(
+        "3_Library_summary.csv"
+    )
+    sum_columns, sum_values = df.recover_summary(summary_path=lib_summary)
+
+    # displays library information in board form
