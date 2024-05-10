@@ -19,7 +19,7 @@ def main_gui():
     print(str(primer_univ_path))
 
     # creating the main window with a Notebook
-    my_gui = Interface(tabs=True, dim_width=1000, dim_height=470)
+    my_gui = Interface(tabs=True, dim_width=1000, dim_height=525)
 
     #######################################################################################
     #               creating of the different tabs in the Notebook
@@ -38,6 +38,8 @@ def main_gui():
         column=0,
         row=0,
         columnspan=6,
+        pady_int=8,
+        pady=10,
     )
     labelframe_param = my_gui.create_labelframe(
         parent=tab_param,
@@ -45,6 +47,8 @@ def main_gui():
         column=0,
         row=1,
         columnspan=6,
+        pady_int=8,
+        pady=10,
     )
 
     #######################################################################################
@@ -319,7 +323,9 @@ def main_gui():
     # --------------------------------------------------------------------------------------
     #                   Separator (Library parameters LabelFrame)
     # --------------------------------------------------------------------------------------
-    separator = my_gui.create_frame(master=labelframe_param, column=3, row=0, width=80)
+    separator = my_gui.create_separator(
+        master=labelframe_param, column=3, row=0, width=80
+    )
     # --------------------------------------------------------------------------------------
     #                   Entries (Library parameters LabelFrame)
     # --------------------------------------------------------------------------------------
@@ -475,41 +481,59 @@ def main_gui():
     #            Creating of the different widgets in the Graphic results tab
     #######################################################################################
     caution_img = src_folder_path.joinpath("resources/Caution.png")
-    label_graphic = my_gui.create_label_graphic(
-        master=tab_graphic,
-        resize_rate=4,
-        image_path=caution_img,
-        column=0,
-        row=0,
-        columnspan=6,
-        width=967,
-        height=419,
+
+    frame_graphic = my_gui.create_frame(
+        master=tab_graphic, width=900, height=450, pady=10
+    )
+
+    label_img_graphic = my_gui.create_img_graphic(
+        master=frame_graphic, resize_rate=4, image_path=caution_img
+    )
+
+    button_exit_graphic = my_gui.create_button_place(
+        master=tab_graphic, text="Exit", x=900, y=465, command=my_gui.destroy
+    )
+
+    #######################################################################################
+    #            Creating of the different widgets in the Summary board tab
+    #######################################################################################
+    frame_summary = my_gui.create_frame(
+        master=tab_board, width=900, height=450, pady=10
+    )
+    label_img_summary = my_gui.create_img_graphic(
+        master=frame_summary, resize_rate=4, image_path=caution_img
+    )
+
+    # Treeview is created but not display because it is empty,
+    # it will be filled with data and displayed after the library design
+    treeview_summary = my_gui.create_csv_board(frame_summary)
+
+    button_exit_summary = my_gui.create_button_place(
+        master=tab_board, text="Exit", x=900, y=465, command=my_gui.destroy
     )
 
     #######################################################################################
     #            Start Library Design and Exit button in parameters tab
     #######################################################################################
-    button_exit_paramaters = my_gui.create_button(
-        master=tab_param, text="Exit", column=5, row=2, command=my_gui.destroy
+    button_exit_paramaters = my_gui.create_button_place(
+        master=tab_param, text="Exit", x=900, y=465, command=my_gui.destroy
     )
-    button_start_design = my_gui.create_button(
+
+    button_start_design = my_gui.create_button_place(
         master=tab_param,
         text="Start Libray Design",
-        column=1,
-        row=2,
+        x=200,
+        y=465,
         command=partial(
             gf.start_design,
             parameters=input_parameters,
             entries_widgets=entries_widgets,
             var_widgets=var_widgets,
-            graphic_widget=label_graphic,
+            graphic_img_label=label_img_graphic,
+            summary_img_label=label_img_summary,
+            frame_board=frame_summary,
+            treeview=treeview_summary,
         ),
-    )
-    #######################################################################################
-    #            Exit button in graphic tab
-    #######################################################################################
-    button_exit_graphic = my_gui.create_button(
-        master=tab_graphic, text="Exit", column=5, row=2, command=my_gui.destroy
     )
 
     my_gui.mainloop()

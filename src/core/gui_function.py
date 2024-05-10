@@ -4,7 +4,7 @@ import re
 
 from functools import partial
 from pathlib import Path
-from tkinter import filedialog, messagebox
+from tkinter import filedialog, messagebox, ttk
 
 from models.library import recover_chr_name
 import core.data_function as df
@@ -70,7 +70,6 @@ def button_load_parameters(
     if entry.get():
         param_path = Path(entry.get())
         input_parameters.update(df.load_parameters(param_path))
-        print(input_parameters)
         fill_entry_param(entry_dic=entries_dic, parameters=input_parameters)
         fill_values_widgets(
             values_widget_dic=values_widgets_dic, parameters=input_parameters
@@ -178,15 +177,58 @@ def display_graphic(widget: tk.Label, img_path: Path) -> None:
     img_zoom = img.zoom(6)
     img_resized = img_zoom.subsample(8)
     widget.configure(image=img_resized)
-
-    # label_img = tk.Label(master=master, image=img_resized)
-    # label_img.grid(column=column, row=row, padx=padx)
     # Keep a reference to the photo object to avoid deletion by the garbage collector : widget.image = img
     widget.image = img_resized
 
 
+def fill_csv_board(
+    master: tk.Frame,
+    treeview: ttk.Treeview,
+    id_columns: list[str | int],
+    column_names: list[str],
+    values: list[list[str | int]],
+):
+    # Create columns
+    treeview["columns"] = id_columns
+
+    # Erase all rows
+    for row in treeview.get_children():
+        treeview.delete(row)
+
+    # fill in the column name for each column
+    for id_col, name in zip(id_columns, column_names):
+        treeview.heading(column=id_col, text=name)
+        treeview.column(column=id_col, width=110, anchor=tk.CENTER)
+
+    # fill in the values for each line
+    i = 0
+    for value in values:
+        if i % 2 == 0:
+            treeview.insert(parent="", index=tk.END, values=value, tags="even_row")
+            i += 1
+        else:
+            treeview.insert(parent="", index=tk.END, values=value, tags="odd_row")
+            i += 1
+    treeview.tag_configure("odd_row", background="white")
+    treeview.tag_configure("even_row", background="#EAF2F8")
+
+    # create a treeview scrollbar
+    tree_scroll = tk.Scrollbar(master=master)
+    treeview.configure(yscrollcommand=tree_scroll.set)
+    tree_scroll.pack(side=tk.RIGHT, fill=tk.Y)
+    tree_scroll.config(command=treeview.yview)
+
+    treeview.pack()
+
+
 def start_design(
-    parameters: dict, entries_widgets: dict, var_widgets: dict, graphic_widget: tk.Label
+    parameters: dict,
+    entries_widgets: dict,
+    var_widgets: dict,
+    graphic_img_label: tk.Label,
+    summary_img_label: tk.Label,
+    frame_board: tk.Frame,
+    treeview: ttk.Treeview,
 ) -> None:
     updated_parameters = check_recover_settings(
         parameters=parameters, entries_widgets=entries_widgets, var_widgets=var_widgets
@@ -197,12 +239,23 @@ def start_design(
     )
     # displays library information in graphical form
     graphic_img = updated_parameters["path_result_folder"].joinpath("plot.png")
-    display_graphic(widget=graphic_widget, img_path=graphic_img)
+    display_graphic(widget=graphic_img_label, img_path=graphic_img)
 
     # recovery detailed information from the library (for board visualisation)
-    lib_summary = updated_parameters["path_result_folder"].joinpath(
+    lib_summary_file_path = updated_parameters["path_result_folder"].joinpath(
         "3_Library_summary.csv"
     )
-    sum_columns, sum_values = df.recover_summary(summary_path=lib_summary)
+    sum_columns, sum_values = df.recover_summary(summary_path=lib_summary_file_path)
 
-    # displays library information in board form
+    # delete img_caution to place csv table where required
+    summary_img_label.pack_forget()
+
+    # displays library information in board form treeview_summary
+    id_columns = list(range(len(sum_columns)))
+    fill_csv_board(
+        master=frame_board,
+        treeview=treeview,
+        id_columns=id_columns,
+        column_names=sum_columns,
+        values=sum_values,
+    )

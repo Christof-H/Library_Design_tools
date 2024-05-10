@@ -37,15 +37,18 @@ class Interface(tk.Tk):
         self.notebook.add(tab, text=title)
         return tab
 
-    def create_labelframe(self, parent, text, column, row, columnspan):
+    def create_labelframe(
+        self, parent, text, column, row, columnspan, pady_int=None, pady=None
+    ):
         # TODO : add docstring for this method and input/output type
-        labelframe = tk.LabelFrame(master=parent, text=text, width=self.width)
-        # labelframe.pack(pady=10, padx=20, fill="both")
+        labelframe = tk.LabelFrame(
+            master=parent, text=text, width=self.width, pady=pady_int
+        )
         labelframe.grid(
             column=column,
             row=row,
             columnspan=columnspan,
-            pady=10,
+            pady=pady,
             padx=20,
             sticky=tk.EW,
         )
@@ -63,24 +66,12 @@ class Interface(tk.Tk):
         # possibility to put img_resized in label_img.image : label_img.image = img_resized
         return label_img, img_resized
 
-    def create_label_graphic(
-        self,
-        master,
-        image_path,
-        column,
-        row,
-        columnspan,
-        width,
-        height,
-        resize_rate=1,
-    ):
+    def create_img_graphic(self, master, image_path, resize_rate=1):
         # TODO : add docstring for this method and input/output type
         img = tk.PhotoImage(file=image_path)
         img_resized = img.subsample(resize_rate)
-        label_img = tk.Label(
-            master=master, image=img_resized, width=width, height=height
-        )
-        label_img.grid(column=column, row=row, columnspan=columnspan)
+        label_img = tk.Label(master=master, image=img_resized)
+        label_img.place(x=0, y=0, relwidth=1, relheight=1)
         # Keep a reference to the photo object to avoid deletion by the garbage collector
         label_img.image = img_resized
         return label_img
@@ -115,6 +106,12 @@ class Interface(tk.Tk):
         # TODO : add docstring for this method and input/output type
         button = tk.Button(master=master, text=text, command=command)
         button.grid(column=column, row=row, pady=pady, padx=padx, sticky=sticky)
+        return button
+
+    def create_button_place(self, master, text, x, y, command=None):
+        # TODO : add docstring for this method and input/output type
+        button = tk.Button(master=master, text=text, command=command)
+        button.place(x=x, y=y)
         return button
 
     def create_radiobutton(
@@ -193,22 +190,23 @@ class Interface(tk.Tk):
         )
         return combobox
 
-    def create_frame(self, master, column, row, width=None, height=None):
+    def create_separator(self, master, column=None, row=None, width=None):
         frame = tk.Frame(
             master=master,
             width=width,
-            height=height,
         )
         # TODO : add docstring for this method and input/output type
         frame.grid(column=column, row=row)
         return frame
 
+    def create_frame(self, master, width, height, pady=None):
+        frame = tk.Frame(master=master, width=width, height=height)
+        frame.pack(pady=pady)
+        return frame
+
     def create_csv_board(
         self,
         master: tk.Frame,
-        columns: list[str | int],
-        column_names: list[str],
-        values: list[list[str | int]],
     ):
         # Add a style for Treeview
         tree_style = ttk.Style()
@@ -227,38 +225,9 @@ class Interface(tk.Tk):
         # change row selected color
         tree_style.map("Treeview", background=[("selected", "#347083")])
 
-        # create a treeview scrollbar
-        tree_scroll = tk.Scrollbar(master=master)
-        tree_scroll.pack(side=tk.RIGHT, fill=tk.Y)
-
-        #
-        tree = ttk.Treeview(
-            master=master,
-            columns=column_names,
-            yscrollcommand=tree_scroll.set,
-            selectmode="extended",
-        )
+        # Create Treeview and specify the number of row to be displayed by default (16)
+        tree = ttk.Treeview(master=master, height=17)
         # deactivates the index column
         tree.configure(show="headings")
-
-        # fill in the column name for each column
-        for name, column in zip(columns, column_names):
-            tree.heading(column=column, text=name)
-            tree.column(column=column, width=120, anchor=tk.CENTER)
-
-        # fill in the values for each line
-        i = 0
-        for value in values:
-            if i % 2 == 0:
-                tree.insert(parent="", index=tk.END, values=value, tags="even_row")
-                i += 1
-            else:
-                tree.insert(parent="", index=tk.END, values=value, tags="odd_row")
-                i += 1
-        tree.tag_configure("odd_row", background="white")
-        tree.tag_configure("even_row", background="#EAF2F8")
-        tree.pack()
-
-        tree_scroll.config(command=tree.yview)
 
         return tree
