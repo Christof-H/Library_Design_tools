@@ -16,7 +16,6 @@ def main_gui():
 
     src_folder_path = Path(__file__).absolute().parents[1]
     primer_univ_path = src_folder_path.joinpath("resources/Primer_univ.csv")
-    print(str(primer_univ_path))
 
     # creating the main window with a Notebook
     my_gui = Interface(tabs=True, dim_width=1000, dim_height=525)

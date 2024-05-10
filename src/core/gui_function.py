@@ -191,7 +191,7 @@ def fill_csv_board(
     # Create columns
     treeview["columns"] = id_columns
 
-    # Erase all rows
+    # Erase all rows if a design has already been done
     for row in treeview.get_children():
         treeview.delete(row)
 
