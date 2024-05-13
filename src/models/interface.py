@@ -230,4 +230,9 @@ class Interface(tk.Tk):
         # deactivates the index column
         tree.configure(show="headings")
 
-        return tree
+        # create a treeview scrollbar
+        tree_scroll = tk.Scrollbar(master=master)
+        tree.configure(yscrollcommand=tree_scroll.set)
+        tree_scroll.config(command=tree.yview)
+
+        return tree, tree_scroll

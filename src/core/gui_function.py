@@ -184,6 +184,7 @@ def display_graphic(widget: tk.Label, img_path: Path) -> None:
 def fill_csv_board(
     master: tk.Frame,
     treeview: ttk.Treeview,
+    tree_scroll: tk.Scrollbar,
     id_columns: list[str | int],
     column_names: list[str],
     values: list[list[str | int]],
@@ -212,12 +213,7 @@ def fill_csv_board(
     treeview.tag_configure("odd_row", background="white")
     treeview.tag_configure("even_row", background="#EAF2F8")
 
-    # create a treeview scrollbar
-    tree_scroll = tk.Scrollbar(master=master)
-    treeview.configure(yscrollcommand=tree_scroll.set)
     tree_scroll.pack(side=tk.RIGHT, fill=tk.Y)
-    tree_scroll.config(command=treeview.yview)
-
     treeview.pack()
 
 
@@ -229,6 +225,7 @@ def start_design(
     summary_img_label: tk.Label,
     frame_board: tk.Frame,
     treeview: ttk.Treeview,
+    tree_scroll=tk.Scrollbar,
 ) -> None:
     updated_parameters = check_recover_settings(
         parameters=parameters, entries_widgets=entries_widgets, var_widgets=var_widgets
@@ -258,4 +255,5 @@ def start_design(
         id_columns=id_columns,
         column_names=sum_columns,
         values=sum_values,
+        tree_scroll=tree_scroll,
     )
