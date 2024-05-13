@@ -505,7 +505,7 @@ def main_gui():
 
     # Treeview is created but not display because it is empty,
     # it will be filled with data and displayed after the library design
-    treeview_summary = my_gui.create_csv_board(frame_summary)
+    treeview_summary, tree_scrollbar = my_gui.create_csv_board(frame_summary)
 
     button_exit_summary = my_gui.create_button_place(
         master=tab_board, text="Exit", x=900, y=465, command=my_gui.destroy
@@ -532,6 +532,7 @@ def main_gui():
             summary_img_label=label_img_summary,
             frame_board=frame_summary,
             treeview=treeview_summary,
+            tree_scroll=tree_scrollbar,
         ),
     )
 
