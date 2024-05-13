@@ -2,7 +2,6 @@ import _tkinter
 import tkinter as tk
 import re
 
-from functools import partial
 from pathlib import Path
 from tkinter import filedialog, messagebox, ttk
 
@@ -66,7 +65,6 @@ def display_univ_primers_combobox(path: Path):
 def button_load_parameters(
     entry: tk.Entry, entries_dic: dict, values_widgets_dic: dict, input_parameters: dict
 ) -> None:
-    src_folder_path = Path(__file__).absolute().parent
     if entry.get():
         param_path = Path(entry.get())
         input_parameters.update(df.load_parameters(param_path))
@@ -111,7 +109,7 @@ def set_mess_box_warning(param_name: str):
 
 
 def check_recover_settings(parameters: dict, entries_widgets: dict, var_widgets: dict):
-
+    valid_input = True
     # update of entry values in input_parameters (chr_file_path, chr_name, output_folder_path)
     for entry_name, entry in entries_widgets.items():
         if entry_name != "chromosome_file":
@@ -130,11 +128,13 @@ def check_recover_settings(parameters: dict, entries_widgets: dict, var_widgets:
             try:
                 parameters.update({"resolution": var_widgets.get("resolution").get()})
             except _tkinter.TclError:
+                valid_input = False
                 set_mess_box_error(param_name="locus size", type="integer")
         elif var_name == "nbr_bcd_rt_by_probe":
             try:
                 parameters.update({var_name: var_wid.get()})
             except _tkinter.TclError:
+                valid_input = False
                 set_mess_box_error(
                     param_name="number of RTs/brcds by probe", type="integer"
                 )
@@ -144,6 +144,7 @@ def check_recover_settings(parameters: dict, entries_widgets: dict, var_widgets:
             try:
                 parameters.update({var_name: var_wid.get()})
             except _tkinter.TclError:
+                valid_input = False
                 set_mess_box_error(
                     param_name="number of probes by locus", type="integer"
                 )
@@ -151,6 +152,7 @@ def check_recover_settings(parameters: dict, entries_widgets: dict, var_widgets:
             try:
                 parameters.update({var_name: var_wid.get()})
             except _tkinter.TclError:
+                valid_input = False
                 set_mess_box_error(
                     param_name="Library starting coordinates", type="integer"
                 )
@@ -158,9 +160,11 @@ def check_recover_settings(parameters: dict, entries_widgets: dict, var_widgets:
             try:
                 parameters.update({var_name: var_wid.get()})
             except _tkinter.TclError:
+                valid_input = False
                 set_mess_box_error(param_name="total loci", type="integer")
         elif var_name == "primer_univ":
             if var_wid.get() == "Choose universal primer couple":
+                valid_input = False
                 set_mess_box_warning(param_name="universal primer")
             else:
                 primer_combobox_choice = var_wid.get()
@@ -168,7 +172,7 @@ def check_recover_settings(parameters: dict, entries_widgets: dict, var_widgets:
                     r"(^primer\d{1,2})", primer_combobox_choice
                 ).group(1)
                 parameters.update({var_name: primer_univ})
-    return parameters
+    return parameters, valid_input
 
 
 #
@@ -227,33 +231,34 @@ def start_design(
     treeview: ttk.Treeview,
     tree_scroll=tk.Scrollbar,
 ) -> None:
-    updated_parameters = check_recover_settings(
+    updated_parameters, valid_input = check_recover_settings(
         parameters=parameters, entries_widgets=entries_widgets, var_widgets=var_widgets
     )
-    design_process(
-        output_folder=updated_parameters["output_folder"],
-        inputs_parameters=updated_parameters,
-    )
-    # displays library information in graphical form
-    graphic_img = updated_parameters["path_result_folder"].joinpath("plot.png")
-    display_graphic(widget=graphic_img_label, img_path=graphic_img)
+    if valid_input:
+        design_process(
+            output_folder=updated_parameters["output_folder"],
+            inputs_parameters=updated_parameters,
+        )
+        # displays library information in graphical form
+        graphic_img = updated_parameters["path_result_folder"].joinpath("plot.png")
+        display_graphic(widget=graphic_img_label, img_path=graphic_img)
 
-    # recovery detailed information from the library (for board visualisation)
-    lib_summary_file_path = updated_parameters["path_result_folder"].joinpath(
-        "3_Library_summary.csv"
-    )
-    sum_columns, sum_values = df.recover_summary(summary_path=lib_summary_file_path)
+        # recovery detailed information from the library (for board visualisation)
+        lib_summary_file_path = updated_parameters["path_result_folder"].joinpath(
+            "3_Library_summary.csv"
+        )
+        sum_columns, sum_values = df.recover_summary(summary_path=lib_summary_file_path)
 
-    # delete img_caution to place csv table where required
-    summary_img_label.pack_forget()
+        # delete img_caution to place csv table where required
+        summary_img_label.pack_forget()
 
-    # displays library information in board form treeview_summary
-    id_columns = list(range(len(sum_columns)))
-    fill_csv_board(
-        master=frame_board,
-        treeview=treeview,
-        id_columns=id_columns,
-        column_names=sum_columns,
-        values=sum_values,
-        tree_scroll=tree_scroll,
-    )
+        # displays library information in board form treeview_summary
+        id_columns = list(range(len(sum_columns)))
+        fill_csv_board(
+            master=frame_board,
+            treeview=treeview,
+            id_columns=id_columns,
+            column_names=sum_columns,
+            values=sum_values,
+            tree_scroll=tree_scroll,
+        )
