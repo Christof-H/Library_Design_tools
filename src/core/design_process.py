@@ -48,7 +48,7 @@ def design_process(
     # Opening and formatting the coordinates and genomic sequences of in the list_seq_genomic variable :
     list_seq_genomic = df.seq_genomic_format(parameters["genomic_path"])
 
-    # Opening and formatting universal primers in the primer_univ variable : :
+    # Opening and formatting universal primers in the primer_univ variable :
     primer_univ_list = df.universal_primer_format(parameters["primer_univ_path"])
 
     print_sample(list_seq_genomic, bcd_rt_list, primer_univ_list)
