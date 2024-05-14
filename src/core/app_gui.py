@@ -4,6 +4,8 @@ from pathlib import Path
 
 from models.interface import Interface
 import core.gui_function as gf
+from models.tooltip import Tooltip
+import core.data_function as df
 
 
 def main_gui():
@@ -88,6 +90,26 @@ def main_gui():
         column=0,
         row=3,
         padx=8,
+    )
+    #           Creating Tooltip for each info image label (File/Folder LabelFrame)
+    # --------------------------------------------------------------------------------------
+    # recover text information :
+    info_text_path = (
+        Path(__file__).absolute().parents[1].joinpath("resources/tooltip_text.json")
+    )
+    info_text = df.recover_info_text(info_json=info_text_path)
+
+    tooltip_info_load_param = Tooltip(
+        widget=info_load_param, text=info_text["info_load_input_parameters"]
+    )
+    tooltip_info_chr_folder = Tooltip(
+        widget=info_chr_folder, text=info_text["info_chromosome_file_path"]
+    )
+    tooltip_info_chr_name = Tooltip(
+        widget=info_chr_name, text=info_text["info_chromosome_file_name"]
+    )
+    tooltip_info_output = Tooltip(
+        widget=info_output, text=info_text["info_output_folder_path"]
     )
 
     # --------------------------------------------------------------------------------------
@@ -272,6 +294,31 @@ def main_gui():
         row=3,
         padx=8,
     )
+    #           Creating Tooltip for each info image label (Library Parameters LabelFrame)
+    # --------------------------------------------------------------------------------------
+
+    tooltip_info_design = Tooltip(
+        widget=info_design, text=info_text["info_library_strategy_design"]
+    )
+    tooltip_info_labelling = Tooltip(
+        widget=info_labelling, text=info_text["info_labelling_strategy"]
+    )
+    tooltip_info_nbr_rt = Tooltip(
+        widget=info_nbr_rt, text=info_text["info_number_RTs_or_barcodes_by_probes"]
+    )
+    tooltip_info_nbr_probe = Tooltip(
+        widget=info_nbr_probe, text=info_text["info_number_of_probes_by_locus"]
+    )
+    tooltip_info_total_loci = Tooltip(
+        widget=info_total_loci, text=info_text["info_number_of_total_loci"]
+    )
+    tooltip_info_lib_start = Tooltip(
+        widget=info_lib_start, text=info_text["info_library_starting_coordinates"]
+    )
+    tooltip_info_univ_primer = Tooltip(
+        widget=info_univ_primer, text=info_text["info_universal_primer_couple"]
+    )
+
     # --------------------------------------------------------------------------------------
     #                   Text labels (Library parameters LabelFrame)
     # --------------------------------------------------------------------------------------
