@@ -10,19 +10,19 @@ import core.data_function as df
 from core.design_process import design_process
 
 
-def change_state_widget(entry: tk.Entry, var_radio_b: tk.StringVar):
+def change_state_widget(entry: tk.Entry, var_radio_b: tk.StringVar) -> None:
     if entry["state"] == tk.NORMAL and var_radio_b.get() == "nbr_probes":
         entry.config(state=tk.DISABLED)
     else:
         entry.config(state=tk.NORMAL)
 
 
-def erase_entry(entry: tk.Entry):
+def erase_entry(entry: tk.Entry) -> None:
     if entry.get():
         entry.delete(0, len(entry.get()))
 
 
-def open_file_dialog(entry: tk.Entry):
+def open_file_dialog(entry: tk.Entry) -> None:
     file_name = filedialog.askopenfilename(title="Select a file")
     if file_name:
         print("File selected :", file_name)
@@ -33,7 +33,7 @@ def open_file_dialog(entry: tk.Entry):
     return file_name
 
 
-def open_dialog_display_chr_name(entry_folder: tk.Entry, entry_name: tk.Entry):
+def open_dialog_display_chr_name(entry_folder: tk.Entry, entry_name: tk.Entry) -> None:
     chr_path = Path(open_file_dialog(entry_folder))
     chr_name = recover_chr_name(str(chr_path))
     if chr_name:
@@ -43,7 +43,7 @@ def open_dialog_display_chr_name(entry_folder: tk.Entry, entry_name: tk.Entry):
         entry_name.config(state=tk.DISABLED)
 
 
-def open_folder_dialog(entry: tk.Entry):
+def open_folder_dialog(entry: tk.Entry) -> None:
     folder_name = filedialog.askdirectory(title="Select a folder")
     if folder_name:
         print("Folder selected :", folder_name)
@@ -53,7 +53,7 @@ def open_folder_dialog(entry: tk.Entry):
         entry.config(state=tk.DISABLED)
 
 
-def display_univ_primers_combobox(path: Path):
+def display_univ_primers_combobox(path: Path) -> list[str]:
     univ_primer_dic = df.universal_primer_format(path)
     univ_primer_display = []
     for key, values in univ_primer_dic.items():
@@ -74,7 +74,7 @@ def button_load_parameters(
         )
 
 
-def fill_entry_param(entry_dic: dict, parameters: dict):
+def fill_entry_param(entry_dic: dict, parameters: dict) -> None:
     for entry_name, entry in entry_dic.items():
         if entry_name == "output_folder" and not entry.get():
             parent_folder = Path(__file__).absolute().parents[2]
@@ -88,27 +88,29 @@ def fill_entry_param(entry_dic: dict, parameters: dict):
             entry.config(state=tk.DISABLED)
 
 
-def fill_values_widgets(values_widget_dic: dict, parameters: dict):
+def fill_values_widgets(values_widget_dic: dict, parameters: dict) -> None:
     for str_var_name, var_widget in values_widget_dic.items():
         if parameters.get(str_var_name):
             var_widget.set(parameters.get(str_var_name))
 
 
-def set_mess_box_error(param_name: str, type: str):
+def set_mess_box_error(param_name: str, type: str) -> None:
     messagebox.showerror(
         title="Input error",
         message=f"The type of {param_name} is not correct.\nPlease enter an {type}.",
     )
 
 
-def set_mess_box_warning(param_name: str):
+def set_mess_box_warning(param_name: str) -> None:
     messagebox.showwarning(
         title="Warning !",
         message=f"The {param_name} is not correct.\nPlease select a correct value.",
     )
 
 
-def check_recover_settings(parameters: dict, entries_widgets: dict, var_widgets: dict):
+def check_recover_settings(
+    parameters: dict, entries_widgets: dict, var_widgets: dict
+) -> tuple[dict, bool]:
     valid_input = True
     # update of entry values in input_parameters (chr_file_path, chr_name, output_folder_path)
     for entry_name, entry in entries_widgets.items():
@@ -192,7 +194,7 @@ def fill_csv_board(
     id_columns: list[str | int],
     column_names: list[str],
     values: list[list[str | int]],
-):
+) -> None:
     # Create columns
     treeview["columns"] = id_columns
 
@@ -261,4 +263,8 @@ def start_design(
             column_names=sum_columns,
             values=sum_values,
             tree_scroll=tree_scroll,
+        )
+    else:
+        print(
+            "/!\ : The library design process did not take place because there must be a problem in the parameters"
         )
