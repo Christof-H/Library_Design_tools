@@ -184,7 +184,7 @@ def save_parameters(
     print(f"All files concerning your library design are saved in {path_str}/")
 
 
-def recover_summary(summary_path: Path):
+def recover_summary(summary_path: Path) -> tuple[list[str], list[list[str]]]:
     with open(file=summary_path, mode="r", encoding="utf-8") as sum_file:
         i = 1
         values = []

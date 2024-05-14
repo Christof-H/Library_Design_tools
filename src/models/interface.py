@@ -225,7 +225,7 @@ class Interface(tk.Tk):
         # change row selected color
         tree_style.map("Treeview", background=[("selected", "#347083")])
 
-        # Create Treeview and specify the number of row to be displayed by default (16)
+        # Create Treeview and specify the number of row to be displayed by default (17)
         tree = ttk.Treeview(master=master, height=17)
         # deactivates the index column
         tree.configure(show="headings")
