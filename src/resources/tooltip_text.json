@@ -2,7 +2,7 @@
   "info_load_input_parameters": "Optional: you can choose an input_parameters.json file containing all the parameters for the library design (they can be loaded and modified later in the parameter console).",
   "info_chromosome_file_path": "Path of the file containing the genomic sequences for the chosen organism and chromosome (must be a '.bed' type file).",
   "info_chromosome_file_name": "Name of the file containing the genomic sequences (generated automatically from the 'Chromosome file path').",
-  "info_output_folder_path": "Define the folder in which you want to save the results files.",
+  "info_output_folder_path": "Define the folder in which you want to save the result files.",
   "info_library_strategy_design": "Choose the design strategy :\n - based on fixed loci size (so, define the size of a locus, in bases)\n - depending on the number of primary probes (each locus will have a size that can vary).",
   "info_labelling_strategy": "Choose the type of labelling :\n - direct labelling by pairing oligo imaging directly onto the primary probe\n - indirect labelling using barcodes (acting as a bridge between the primary probe and the imaging oligo).",
   "info_number_RTs_or_barcodes_by_probes": "Enter how many RTs (imaging oligo) or barcodes (bridge) can bind to the primary probe (options: from 1 to 5).",

@@ -195,3 +195,10 @@ def recover_summary(summary_path: Path) -> tuple[list[str], list[list[str]]]:
             else:
                 values.append([x for x in line.replace("\n", "").split(",")])
         return columns, values
+
+
+def recover_info_text(info_json: Path) -> dict[str:str]:
+    with open(file=info_json, mode="r", encoding="UTF-8") as file:
+        data = json.load(file)
+    print(data)
+    return data
