@@ -34,6 +34,7 @@ def design_process(
     #                                   Creating result folder
     # ---------------------------------------------------------------------------------------------
     result_folder = output_folder.joinpath("Library_Design_Results")
+    parameters["output_folder"] = result_folder
     if not result_folder.exists():
         result_folder.mkdir()
 

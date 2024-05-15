@@ -84,8 +84,10 @@ def test():
     bouton1.pack(pady=20, padx=50)
     bouton2 = tk.Button(master=root, text="bouton 2")
     bouton2.pack(pady=20, padx=50)
-    text1 = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc libero justo, dapibus vitae mauris et, venenatis molestie ante. Vivamus quis pellentesque lorem."
-    text2 = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Cras et sem nulla. Maecenas arcu nisi, ultricies ut placerat et, bibendum a nulla. Suspendisse in tellus non est dignissim rutrum ac."
+    text1 = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc libero justo, dapibus vitae mauris et, \
+venenatis molestie ante. Vivamus quis pellentesque lorem."
+    text2 = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Cras et sem nulla. \
+Maecenas arcu nisi, ultricies ut placerat et, bibendum a nulla. Suspendisse in tellus non est dignissim rutrum ac."
     tooltip1 = Tooltip(widget=bouton1, text=text1)
     tooltip2 = Tooltip(widget=bouton2, text=text2)
 
