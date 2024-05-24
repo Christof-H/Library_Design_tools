@@ -25,6 +25,10 @@ class Interface(tk.Tk):
         else:
             self.notebook = None
 
+    def on_exit(self):
+        self.quit()
+        self.destroy()
+
     def create_notebook(self):
         # TODO : add docstring for this method and input/output type
         self.notebook = ttk.Notebook(self)

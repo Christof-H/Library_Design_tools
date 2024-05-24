@@ -537,7 +537,7 @@ def main_gui():
     )
 
     button_exit_graphic = my_gui.create_button_place(
-        master=tab_graphic, text="Exit", x=900, y=465, command=my_gui.destroy
+        master=tab_graphic, text="Exit", x=900, y=465, command=my_gui.on_exit
     )
 
     #######################################################################################
@@ -555,14 +555,14 @@ def main_gui():
     treeview_summary, tree_scrollbar = my_gui.create_csv_board(frame_summary)
 
     button_exit_summary = my_gui.create_button_place(
-        master=tab_board, text="Exit", x=900, y=465, command=my_gui.destroy
+        master=tab_board, text="Exit", x=900, y=465, command=my_gui.on_exit
     )
 
     #######################################################################################
     #            Start Library Design and Exit button in parameters tab
     #######################################################################################
     button_exit_paramaters = my_gui.create_button_place(
-        master=tab_param, text="Exit", x=900, y=465, command=my_gui.destroy
+        master=tab_param, text="Exit", x=900, y=465, command=my_gui.on_exit
     )
 
     button_start_design = my_gui.create_button_place(
