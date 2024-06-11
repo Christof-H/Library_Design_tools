@@ -43,6 +43,7 @@ def main():
 
     args = parse_arguments()
     check_args(args)
+    print(args)
 
     if not args.cli:
         json_parameters_path = args.parameters
