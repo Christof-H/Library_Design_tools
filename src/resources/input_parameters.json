@@ -1,6 +1,6 @@
 {
     "chromosome_file": "chr3L.bed",
-    "chromosome_folder": "/mnt/PALM_dataserv/DATA/Commun/genomes/dm6/OligoMiner/dm6_balanced/",
+    "chromosome_folder": "src/resources",
     "design_type": "nbr_probes",
     "resolution": 10000,
     "start_lib": 8883000,

@@ -6,8 +6,6 @@ from models.library import Library
 
 
 def load_parameters(json_path: Path) -> dict[str, str | int | Path]:
-    # TODO: faire un try/except au cas ou un paramètre n'est pas trouvé
-    # TODO: fair un try/except au cas ou fichier donné n'est pas un fichier json
     """Load parameters from parameter json file
 
     Args:
