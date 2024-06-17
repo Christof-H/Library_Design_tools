@@ -5,6 +5,7 @@ env/
 Library_Design_Results/
 models/__pycache__/*
 modules/__pycache__/*
+dist/
 
 # Byte-compiled / optimized / DLL files
 */__pycache__/*

@@ -1,0 +1,27 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "MFISH_lib_design"
+version = "0.0.111"
+authors = [
+  { name="Christophe Houbron", email="christof.houbron@gmail.com" },
+]
+description = "Pipeline and functions to generate probes for multiplexed DNA-FISH"
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies =["matplotlib >= 3.9.0"]
+
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+]
+
+[project.scripts]
+lib_design = "library_design:main"
+
+[project.urls]
+Homepage = "https://github.com/Christof-H/Library_Design_tools"
+Issues = "https://github.com/Christof-H/Library_Design_tools/issues"
