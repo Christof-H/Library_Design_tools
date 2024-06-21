@@ -125,10 +125,52 @@ You should see (myenv) in front of your command prompt, indicating that the virt
 4. Script installation in your activated virtual environment
 
 ```bash
-(myenv)$ pip install .....
+(myenv)$ pip install MFISH_lib_design
 ```
 
+Pip installation will automatically install all the dependencies required for the script to function correctly.
 
+## Testing the script with default parameters
+
+1. Launching the script with the **command line interface**:
+
+```bash
+$ design_probes -c -o ~/path/to/your/folder/result
+```
+
+The script will use default parameters and genomic probes to design the probe library. You will find all the result files in the folder `~/path/to/your/folder/result`.
+
+2. Launching the script with the **graphical user interface **:
+
+To start with, you will need 2 files to test this graphical interface with default parameters and genomic sequences.
+
+To retrieve the input_parameters.json file, open a terminal in the folder of your choice (`myDownloadFolder`), and run the command:
+
+```bash
+$ curl -OL https://raw.githubusercontent.com/Christof-H/Library_Design_tools/master/src/resources/input_parameters.json
+```
+
+To retrieve the file containing the genomic sequences for the test, while still in the `myDownloadFolder`:
+
+```bash
+$ curl -OL https://raw.githubusercontent.com/Christof-H/Library_Design_tools/master/src/resources/chr3L.bed
+```
+
+Now that you have retrieved the files for the test design, you can launch the graphical interface:
+
+```bash
+$ design_probes
+```
+
+When the graphical interface appears:
+
+-  select the path to the input_parameters.json file (path to `.../myDownloadFolder/input_parameters.json`)
+- click on the load parameters button
+- select the path to the genomic sequences file (path to `.../myDownloadFolder/chr3L.bed`)
+- choose the destination folder for the result files
+- click on the 'Start Library Design' button
+
+You will then have the results files saved in your result destination folder, and you can already look at the 'Graphic result' and 'Library details' tabs to see how this test library design looks.
 
 ## Using the script
 
