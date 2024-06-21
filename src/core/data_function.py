@@ -27,10 +27,19 @@ def load_parameters(json_path: Path) -> dict[str, str | int | Path]:
         input_param["end_lib"] = input_param["start_lib"] + (
             input_param["nbr_loci_total"] * input_param["resolution"]
         )
-        input_param["genomic_path"] = Path(input_param["chromosome_folder"]).joinpath(
-            input_param["chromosome_file"]
-        )
         input_param["resources_path"] = src_folder.joinpath("resources")
+
+        #Adds a default path for the chromosome folder when this is not specified in input_parameters.json
+        #(when using the script for a test)
+        if input_param["chromosome_folder"]:
+            input_param["chromosome_folder"] = Path(input_param["chromosome_folder"])
+            input_param["genomic_path"] = input_param["chromosome_folder"].joinpath(
+                input_param["chromosome_file"])
+        else:
+            input_param["chromosome_folder"] = input_param["resources_path"]
+            input_param["genomic_path"] = input_param["chromosome_folder"].joinpath(
+                input_param["chromosome_file"])
+
         input_param["bcd_rt_path"] = input_param["resources_path"].joinpath(
             input_param["bcd_rt_file"]
         )
@@ -174,6 +183,7 @@ def save_parameters(
     out_parameters["path_result_folder"] = out_parameters[
         "path_result_folder"
     ].as_posix()
+    out_parameters["chromosome_folder"] = out_parameters["chromosome_folder"].as_posix()
 
     path_str = path_result_folder.as_posix()
     with open(parameters_file_path, mode="w", encoding="UTF-8") as file:

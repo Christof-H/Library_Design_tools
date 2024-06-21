@@ -1,6 +1,6 @@
 {
     "chromosome_file": "chr3L.bed",
-    "chromosome_folder": "src/resources",
+    "chromosome_folder": "",
     "design_type": "nbr_probes",
     "resolution": 10000,
     "start_lib": 8883000,
